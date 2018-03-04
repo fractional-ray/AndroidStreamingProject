@@ -42,14 +42,14 @@ public class PlaybackManager {
 
     private void loadFilesHelper(String subfolder)
     {
-        Log.i("path",subfolder);
+//        Log.i("path",subfolder);
         File directory = new File(subfolder);
         File[] files = directory.listFiles();
         for(File f:files)
         {
             if(!f.isDirectory() && (f.getName().endsWith(".mp3")||f.getName().endsWith(".m4a")))
             {
-                Log.i("file",f.getAbsolutePath());
+//                Log.i("file",f.getAbsolutePath());
                 this.files.add(f.getAbsolutePath());
             }
             else if(f.isDirectory())
