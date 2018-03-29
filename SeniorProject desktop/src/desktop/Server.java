@@ -2,7 +2,7 @@
 Evan
 */
 
-package desktop;
+package desktopGit;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -55,12 +55,12 @@ public class Server
 						{
 							System.out.println(rc);
 							out.write(by,0,rc);
-							rc = s.read(by);
+							rc = s.read(by,0,BUFFER_SIZE);
 						}
 						s.close();
 						
-						out.write("\r\n".getBytes());
-					out.write("-1\r\n".getBytes());
+//						out.write("\r\n".getBytes());
+//					out.write("-1\r\n".getBytes());
 				}
 				else
 				{

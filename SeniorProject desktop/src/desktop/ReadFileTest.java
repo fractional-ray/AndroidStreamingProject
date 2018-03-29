@@ -2,9 +2,10 @@
 Evan
 */
 
-package desktop;
+package desktopGit;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -18,14 +19,17 @@ public class ReadFileTest
 		
 		try {
 		FileInputStream s = new FileInputStream(path.toString());
+		FileOutputStream o = new FileOutputStream("C:\\users\\evan\\documents\\miscellaneous\\test.mp3");
 			int rc = s.read(by);
 			
 			int i = 0;
 			while(rc>0)
 			{	
 				i++;
-				System.out.println(rc+" "+i);
-				rc = s.read(by);
+//				System.out.println(rc+" "+i);
+				o.write(by,0,rc);
+				rc = s.read(by,0,BUFFER_SIZE);
+				
 			}
 		}
 		catch(Exception e)

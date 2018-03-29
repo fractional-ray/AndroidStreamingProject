@@ -25,6 +25,7 @@ public class ConnectionManagerAsyncTask {
     static BufferedReader in;
     static DataOutputStream out;
     private static boolean running = false;
+    final static int BUFFER_SIZE = 1024;
 
     MainActivity context;
 
@@ -46,7 +47,7 @@ public class ConnectionManagerAsyncTask {
         protected Void doInBackground(Void... voids) {
             Log.i("connection test", "opened");
             try {
-                Socket socket = new Socket("192.168.1.117", 5000);
+                Socket socket = new Socket("192.168.1.101", 5000);
                 out = new DataOutputStream(socket.getOutputStream());
 
 
@@ -58,11 +59,11 @@ public class ConnectionManagerAsyncTask {
                 String line;
 
                 FileOutputStream newFile = new FileOutputStream(path+"test.mp3");
-                byte[] by = new byte[1024];
+                byte[] by = new byte[BUFFER_SIZE];
                 int read;
                 do{
-                    read = inS.read(by);
-                    newFile.write(by);
+                    read = inS.read(by,0,BUFFER_SIZE);
+                    newFile.write(by,0,read);
 
 //                    Log.i("message",line);
                 }while(read>0);

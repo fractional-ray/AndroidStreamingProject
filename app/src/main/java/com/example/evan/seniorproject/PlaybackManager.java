@@ -2,6 +2,7 @@ package com.example.evan.seniorproject;
 
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -19,6 +20,7 @@ public class PlaybackManager {
     MainActivity context;
     String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/music/";
     ArrayList<String> files;
+    ArrayList<Song> songs;
 
     int currentSong=0;
     int currentPosition = 0;
@@ -27,42 +29,24 @@ public class PlaybackManager {
     {
         this.context = context;
         files = new ArrayList<String>();
+        songs = new ArrayList<Song>();
 
     }
 
     public void startManager()
     {
         loadFiles();
+        Log.i("amount",files.size()+"");
     }
 
     private void loadFiles()
     {
-        loadFilesHelper(path);
+        LoadFilesTask t = new LoadFilesTask();
+        files = t.doInBackground(path);
+        context.updateSongScroll(files);
     }
 
-    private void loadFilesHelper(String subfolder)
-    {
-//        Log.i("path",subfolder);
-        File directory = new File(subfolder);
-        File[] files = directory.listFiles();
-        for(File f:files)
-        {
-            if(!f.isDirectory() && (f.getName().endsWith(".mp3")||f.getName().endsWith(".m4a")))
-            {
-//                Log.i("file",f.getAbsolutePath());
-                this.files.add(f.getAbsolutePath());
-            }
-            else if(f.isDirectory())
-            {
-                loadFilesHelper(f.getAbsolutePath());
-            }
-            else
-            {
-                return;
-            }
 
-        }
-    }
 
     public void play()
     {
@@ -72,6 +56,20 @@ public class PlaybackManager {
         else{
             currentPosition=mp.getCurrentPosition();
             mp.stop();
+        }
+    }
+    public void play(String toPlay)
+    {
+        try {
+            mp.reset();
+            mp.setDataSource(toPlay);
+            mp.prepare();
+            mp.seekTo(0);
+            mp.start();
+
+            updateNowPlaying();
+        } catch (Exception e) {
+            Log.e("error",e.getMessage());
         }
     }
 
@@ -111,9 +109,55 @@ public class PlaybackManager {
     private void updateNowPlaying()
     {
         md.setDataSource(files.get(currentSong));
-        context.updateNowPlayingLabel("now laying: \n"+md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)+"\n"+
-                md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)+"\n"+
-                md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+        context.updateNowPlayingLabel("now playing: \n");
+//        +songs.get(currentSong).toString()
+
+    }
+
+    private class LoadFilesTask extends AsyncTask<String,Void,ArrayList<String>>
+    {
+
+        ArrayList<String> fi;
+        @Override
+        protected ArrayList<String> doInBackground(String... strings) {
+
+            if(strings.length==1) {
+                fi = new ArrayList<String>();
+                loadFilesHelper(strings[0]);
+                return fi;
+            }
+            else{
+                return null;
+            }
+        }
+
+        private void loadFilesHelper(String subfolder)
+        {
+//        Log.i("path",subfolder);
+            File directory = new File(subfolder);
+            File[] files = directory.listFiles();
+            for(File f:files)
+            {
+                if(!f.isDirectory() && (f.getName().endsWith(".mp3")||f.getName().endsWith(".m4a")))
+                {
+
+//                md.setDataSource(f.getAbsolutePath());
+//                Log.i("file",f.getAbsolutePath());
+//                Log.i("file","a");
+                    fi.add(f.getAbsolutePath());
+//                this.songs.add(new Song(f.getAbsolutePath(),md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)));
+                }
+                else if(f.isDirectory())
+                {
+                    loadFilesHelper(f.getAbsolutePath());
+                }
+                else
+                {
+                    return;
+                }
+
+            }
+        }
 
     }
 }
