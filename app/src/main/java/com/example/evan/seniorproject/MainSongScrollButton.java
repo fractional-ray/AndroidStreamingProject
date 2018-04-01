@@ -7,17 +7,24 @@ import android.widget.Button;
  * Created by Evan on 3/28/2018.
  */
 
-public class SongScrollButton extends android.support.v7.widget.AppCompatButton {
+public class MainSongScrollButton extends android.support.v7.widget.AppCompatButton {
     String ref;
+    int pos;
 
-    public SongScrollButton(Context context, String reference) {
+    public MainSongScrollButton(Context context, String reference, int pos) {
         super(context);
         ref = reference;
         this.setText(reference);
+        this.pos = pos;
     }
 
     public String getReference() {
         return ref;
+    }
+
+    public int getPosition()
+    {
+        return pos;
     }
 
     public void setReference(String ref) {

@@ -1,10 +1,13 @@
 package com.example.evan.seniorproject;
 
+//import android.arch.persistence.room.Room;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+
+import com.example.evan.seniorproject.db.SongDatabase;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,28 +17,44 @@ import java.util.ArrayList;
  */
 
 public class PlaybackManager {
+
+
+//    SongDatabase db;
     MediaPlayer mp = new MediaPlayer();
     MediaMetadataRetriever md = new MediaMetadataRetriever();
 
-    MainActivity context;
-    String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/music/";
-    ArrayList<String> files;
-    ArrayList<Song> songs;
+    private MainActivity context;
+    private String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/music/";
+    private ArrayList<String> files;
+    private ArrayList<String> currentQueue;
+    private ArrayList<Song> songs;
 
-    int currentSong=0;
+    private SongPlayQueue<String> queue;
+
     int currentPosition = 0;
+
+    private boolean isRepeat = true;
+
+    ///////////////////////////////Setup//////////////////////////////
+
+    public static String getPath()
+    {
+        return Environment.getExternalStorageDirectory().getAbsolutePath()+"/music/";
+    }
 
     PlaybackManager(MainActivity context)
     {
         this.context = context;
-        files = new ArrayList<String>();
-        songs = new ArrayList<Song>();
-
     }
 
-    public void startManager()
+    void startManager(ArrayList<String> a)
     {
-        loadFiles();
+        files = a;
+        songs = new ArrayList<Song>();
+        queue = new SongPlayQueue<String>(files);
+        setUpListeners();
+        context.updateSongScroll(files);
+
         Log.i("amount",files.size()+"");
     }
 
@@ -48,40 +67,58 @@ public class PlaybackManager {
 
 
 
+    private void setUpListeners()
+    {
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                skipForward();
+            }
+        });
+    }
+
+    //////////////////////////play management/////////////////////////
+
+    /**
+     * Play song or pause it if already playing.
+     */
     public void play()
     {
         if(!mp.isPlaying()){
-            play(currentPosition);
+            play(0);
         }
         else{
-            currentPosition=mp.getCurrentPosition();
             mp.stop();
         }
     }
-    public void play(String toPlay)
-    {
-        try {
-            mp.reset();
-            mp.setDataSource(toPlay);
-            mp.prepare();
-            mp.seekTo(0);
-            mp.start();
 
-            updateNowPlaying();
-        } catch (Exception e) {
-            Log.e("error",e.getMessage());
-        }
+    /**
+     * Update context and play song
+     * @param context the context to be updated to.
+     */
+    public void playAndSwitchContext(Context context)
+    {
+        updateContext(context);
+        play();
     }
 
+    public void checkResumeAndPlay()
+    {
+
+    }
+
+    /**
+     * Play song at current position in queue starting at certain time in song.
+     * @param position
+     */
     private void play(int position)
     {
         try {
             mp.reset();
-            mp.setDataSource(files.get(currentSong));
+            mp.setDataSource(queue.current());
             mp.prepare();
             mp.seekTo(position);
             mp.start();
-
             updateNowPlaying();
         } catch (Exception e) {
             Log.e("error",e.getMessage());
@@ -89,15 +126,15 @@ public class PlaybackManager {
     }
 
     public void skipForward(){
-        currentSong= (currentSong+1)%files.size();
-        mp.stop();
-        play();
+        queue.moveForward();
+
+        if((queue.currentPosition()==0 && isRepeat)||queue.currentPosition()!=0)
+            play();
     }
 
     public void skipBackward(){
         if(mp.getCurrentPosition() < 1500) {
-            currentSong = ((currentSong - 1) + files.size()) % files.size();
-            mp.stop();
+            queue.moveBackwards();
             play();
         }
         else
@@ -108,15 +145,23 @@ public class PlaybackManager {
 
     private void updateNowPlaying()
     {
-        md.setDataSource(files.get(currentSong));
         context.updateNowPlayingLabel("now playing: \n");
-//        +songs.get(currentSong).toString()
-
     }
+
+    private void updateContext(Context c)
+    {
+        if(c.getContextType()==Context.Contexts.ALL_SONGS_IN_LIBRARY_SPECIFIC)
+        {
+            queue.setContext(files);
+            queue.setPosition(c.getPosition());
+            Log.i("context","specific "+queue.current());
+        }
+    }
+
+    ////////////////////////////inner classes////////////////////////////////
 
     private class LoadFilesTask extends AsyncTask<String,Void,ArrayList<String>>
     {
-
         ArrayList<String> fi;
         @Override
         protected ArrayList<String> doInBackground(String... strings) {
@@ -130,6 +175,8 @@ public class PlaybackManager {
                 return null;
             }
         }
+
+
 
         private void loadFilesHelper(String subfolder)
         {

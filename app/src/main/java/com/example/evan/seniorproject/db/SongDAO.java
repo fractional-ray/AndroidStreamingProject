@@ -1,0 +1,28 @@
+package com.example.evan.seniorproject.db;
+
+//import android.arch.persistence.room.Dao;
+//import android.arch.persistence.room.Insert;
+//import android.arch.persistence.room.Query;
+//import android.provider.SyncStateContract;
+
+import java.util.List;
+
+/**
+ * Created by Evan on 3/29/2018.
+ */
+
+//@Dao
+public interface SongDAO {
+//
+//    @Query("SELECT * FROM song")
+//    List<Song> getAll();
+//
+//    @Query("SELECT * FROM song WHERE album LIKE :album")
+//    List<Song> getAlbum(String album);
+//
+//    @Query("SELECT COUNT(*) from song")
+//    int songCount();
+//
+//    @Insert
+//    void insertAll(Song... songs);
+}
