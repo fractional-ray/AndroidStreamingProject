@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.evan.seniorproject.db.SongDatabase;
 import com.example.evan.seniorproject.view.SongAdapter;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     RecyclerView.Adapter songAdapter;
     RecyclerView.LayoutManager layoutManager;
 
+    SongDatabase songDB;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         Log.i("test","test");
 //        playbackManager.startManager();
 
+
+        songDB = SongDatabase.getInstance(this);
+
         FileManager f = new FileManager(this);
 //        f.doInBackground(PlaybackManager.getPath());
 
@@ -100,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         songRecyclerView.setLayoutManager(layoutManager);
         songAdapter = new SongAdapter(s);
         songRecyclerView.setAdapter(songAdapter);
+
 
 //        songScroll.removeView(pb);
 //        for(int i = 0; i < s.size();i++) {
