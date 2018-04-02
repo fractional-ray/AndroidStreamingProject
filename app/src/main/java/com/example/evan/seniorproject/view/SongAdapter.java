@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.evan.seniorproject.MainActivity;
 import com.example.evan.seniorproject.R;
 import com.example.evan.seniorproject.db.Song;
 
@@ -18,10 +19,12 @@ import java.util.ArrayList;
 
 public class SongAdapter extends RecyclerView.Adapter {
     private ArrayList<Song> files;
+    MainActivity context;
 
-    public SongAdapter(ArrayList<Song> a)
+    public SongAdapter(ArrayList<Song> a, MainActivity context)
     {
         files = a;
+        this.context = context;
     }
 
     @Override
@@ -48,6 +51,7 @@ public class SongAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     Log.i("outp", name.getSongName());
+                    context.playAndUpdateContextAll(position);
 
                 }
             });

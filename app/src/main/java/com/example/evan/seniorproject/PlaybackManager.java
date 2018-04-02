@@ -87,6 +87,7 @@ public class PlaybackManager {
     {
         if(!mp.isPlaying()){
             play(0);
+            updateNowPlaying();
         }
         else{
             mp.stop();
@@ -99,6 +100,7 @@ public class PlaybackManager {
      */
     public void playAndSwitchContext(Context context)
     {
+        mp.stop();
         updateContext(context);
         play();
     }
@@ -116,7 +118,7 @@ public class PlaybackManager {
     {
         try {
             mp.reset();
-            mp.setDataSource(queue.current().getSongName());
+            mp.setDataSource(queue.current().getFileName());
             mp.prepare();
             mp.seekTo(position);
             mp.start();
@@ -130,12 +132,14 @@ public class PlaybackManager {
         queue.moveForward();
 
         if((queue.currentPosition()==0 && isRepeat)||queue.currentPosition()!=0)
+            mp.stop();
             play();
     }
 
     public void skipBackward(){
-        if(mp.getCurrentPosition() < 1500) {
+        if(mp.getCurrentPosition() < 2000) {
             queue.moveBackwards();
+            mp.stop();
             play();
         }
         else
@@ -144,9 +148,15 @@ public class PlaybackManager {
         }
     }
 
+    public void seekTo(int toSeek)
+    {
+        if(mp.isPlaying())
+            mp.seekTo(toSeek);
+    }
     private void updateNowPlaying()
     {
-        context.updateNowPlayingLabel("now playing: \n");
+        context.updateNowPlayingLabel(queue.current().toString());
+
     }
 
     private void updateContext(Context c)

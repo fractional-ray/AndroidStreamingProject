@@ -11,6 +11,7 @@ public class SongPlayQueue<T> implements ContextQueue<T> {
 
     ArrayList<T> context;
     int currPos=0;
+    Context.Contexts currentContext = Context.Contexts.ALL_SONGS_IN_LIBRARY_SPECIFIC;
 
     public SongPlayQueue(ArrayList<T> context)
     {

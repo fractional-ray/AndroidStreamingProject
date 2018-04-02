@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         p.setVisibility(View.GONE);
 
         songRecyclerView.setLayoutManager(layoutManager);
-        songAdapter = new SongAdapter(s);
+        songAdapter = new SongAdapter(s,this);
         songRecyclerView.setAdapter(songAdapter);
 
 
@@ -157,6 +158,31 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     public void updateNowPlayingLabel(String update)
     {
         nowPlaying.setText(update);
+    }
+
+    public void updateNowPlayingSeekbar(int maxLength)
+    {
+        SeekBar s = findViewById(R.id.nowPlayingSeekBar);
+        s.setMax(maxLength);
+        s.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    playbackManager.seekTo(progress * 1000);
+                }
+            }
+        });
     }
 
 

@@ -133,6 +133,6 @@ public class Song {
     @Override
     public String toString()
     {
-        return songName+"\n"+artist+"\n"+album;
+        return songName+" - "+artist+" - "+album;
     }
 }
