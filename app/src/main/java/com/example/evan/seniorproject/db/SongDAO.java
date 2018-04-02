@@ -15,7 +15,7 @@ import java.util.List;
 @Dao
 public interface SongDAO {
 
-    @Query("SELECT * FROM songs")
+    @Query("SELECT * FROM songs ORDER BY song_name ASC")
     List<Song> getAll();
 
     @Query("SELECT * FROM songs WHERE album LIKE :album")
@@ -26,4 +26,8 @@ public interface SongDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Song... songs);
+
+    @Query("DELETE FROM songs")
+    void nukeDatabase();
 }
+

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import com.example.evan.seniorproject.db.Song;
 import com.example.evan.seniorproject.db.SongDatabase;
 
 import java.io.File;
@@ -25,11 +26,11 @@ public class PlaybackManager {
 
     private MainActivity context;
     private String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/music/";
-    private ArrayList<String> files;
+    private ArrayList<Song> files;
     private ArrayList<String> currentQueue;
     private ArrayList<Song> songs;
 
-    private SongPlayQueue<String> queue;
+    private SongPlayQueue<Song> queue;
 
     int currentPosition = 0;
 
@@ -47,11 +48,11 @@ public class PlaybackManager {
         this.context = context;
     }
 
-    void startManager(ArrayList<String> a)
+    void startManager(ArrayList<Song> a)
     {
         files = a;
         songs = new ArrayList<Song>();
-        queue = new SongPlayQueue<String>(files);
+        queue = new SongPlayQueue<Song>(files);
         setUpListeners();
         context.updateSongScroll(files);
 
@@ -61,7 +62,7 @@ public class PlaybackManager {
     private void loadFiles()
     {
         LoadFilesTask t = new LoadFilesTask();
-        files = t.doInBackground(path);
+//        files = t.doInBackground(path);
         context.updateSongScroll(files);
     }
 
@@ -115,7 +116,7 @@ public class PlaybackManager {
     {
         try {
             mp.reset();
-            mp.setDataSource(queue.current());
+            mp.setDataSource(queue.current().getSongName());
             mp.prepare();
             mp.seekTo(position);
             mp.start();
@@ -192,7 +193,7 @@ public class PlaybackManager {
 //                Log.i("file",f.getAbsolutePath());
 //                Log.i("file","a");
                     fi.add(f.getAbsolutePath());
-//                this.songs.add(new Song(f.getAbsolutePath(),md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)));
+//                this.songs.add(new Song(f.getAbsolutePath(),));
                 }
                 else if(f.isDirectory())
                 {

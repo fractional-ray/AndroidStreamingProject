@@ -11,12 +11,34 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity(tableName = "songs")
 public class Song {
 
+    /**
+     * @param fileName
+     * @param songName
+     * @param artist
+     * @param album
+     */
+    public Song(String fileName,String songName, String artist, String album)
+    {
+        this.songName = songName;
+        this.fileName = fileName;
+        this.artist = artist;
+        this.album=album;
+        this.length=0;
+        this.country="a";
+        this.genre="a";
+    }
+
     @PrimaryKey(autoGenerate = true)
     int key;
 
 
     @ColumnInfo(name = "song_name")
     private String songName;
+
+
+
+    @ColumnInfo(name = "file_name")
+    private String fileName;
 
     @ColumnInfo(name = "artist")
     private String artist;
@@ -98,6 +120,14 @@ public class Song {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     @Override

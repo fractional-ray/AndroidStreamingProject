@@ -9,7 +9,7 @@ import android.provider.SyncStateContract;
 /**
  * Created by Evan on 3/29/2018.
  */
-@Database(entities = {Song.class},version = 1)
+@Database(entities = {Song.class},version = 2)
 public abstract class SongDatabase extends RoomDatabase{
 //{
 
@@ -31,7 +31,7 @@ public abstract class SongDatabase extends RoomDatabase{
     private static SongDatabase buildDatabaseInstance(Context context)
     {
         synchronized(SongDatabase.class) {
-            return Room.databaseBuilder(context.getApplicationContext(), SongDatabase.class, DATABASE_NAME).allowMainThreadQueries().build();
+            return Room.databaseBuilder(context.getApplicationContext(), SongDatabase.class, DATABASE_NAME).fallbackToDestructiveMigration().allowMainThreadQueries().build();
         }
     }
 

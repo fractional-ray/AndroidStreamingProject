@@ -1,5 +1,7 @@
 package com.example.evan.seniorproject;
 
+import com.example.evan.seniorproject.db.Song;
+
 import java.util.ArrayList;
 
 /**
@@ -8,5 +10,5 @@ import java.util.ArrayList;
 
 public interface OnTaskComplete {
 
-    void onTaskComplete(ArrayList<String> a);
+    void onTaskComplete(ArrayList<Song> a);
 }

@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.evan.seniorproject.db.Song;
 import com.example.evan.seniorproject.db.SongDatabase;
 import com.example.evan.seniorproject.view.SongAdapter;
 
@@ -48,22 +49,18 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         songRecyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
 
+        requestPermissionsRuntime();
+
         pb = findViewById(R.id.songLoadWheel);
         pb.setIndeterminate(true);
         pb.setEnabled(true);
-
-        ArrayList<String> temp = new ArrayList<String>();
-        for (int i = 0; i < 100; i++) {
-            temp.add("Test" + i);
-        }
-
 
         pb = new ProgressBar(this);
         pb.setIndeterminate(true);
 
 //        songScroll.addView(pb);
 
-        requestPermissionsRuntime();
+
 
         playbackManager = new PlaybackManager(this);
         connectionManager = new ConnectionManagerAsyncTask(this);
@@ -74,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
         songDB = SongDatabase.getInstance(this);
 
-        FileManager f = new FileManager(this);
+        FileManager f = new FileManager(this,songDB);
 //        f.doInBackground(PlaybackManager.getPath());
 
 
@@ -96,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         }
     }
 
-    public void updateSongScroll(ArrayList<String> s)
+    public void updateSongScroll(ArrayList<Song> s)
     {
 
         ProgressBar p = findViewById(R.id.songLoadWheel);
@@ -148,14 +145,24 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         connectionManager.connect();
     }
 
+    public void refreshLibrary(View v){
+        songDB.songDAO().nukeDatabase();
+
+
+        FileManager f = new FileManager(this,songDB);
+        f.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,PlaybackManager.getPath());
+
+    }
+
     public void updateNowPlayingLabel(String update)
     {
         nowPlaying.setText(update);
     }
 
 
+
     @Override
-    public void onTaskComplete(ArrayList<String>a) {
+    public void onTaskComplete(ArrayList<Song> a) {
         playbackManager.startManager(a);
     }
 }

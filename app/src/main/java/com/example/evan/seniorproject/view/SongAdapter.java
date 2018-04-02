@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.evan.seniorproject.R;
+import com.example.evan.seniorproject.db.Song;
 
 import java.util.ArrayList;
 
@@ -16,9 +17,9 @@ import java.util.ArrayList;
  */
 
 public class SongAdapter extends RecyclerView.Adapter {
-    private ArrayList<String> files;
+    private ArrayList<Song> files;
 
-    public SongAdapter(ArrayList<String> a)
+    public SongAdapter(ArrayList<Song> a)
     {
         files = a;
     }
@@ -38,19 +39,21 @@ public class SongAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final String name = files.get(position);
+        final Song name = files.get(position);
 
         if(holder instanceof SongAdapter.ViewHolder) {
             SongAdapter.ViewHolder vh = (SongAdapter.ViewHolder) holder;
-            vh.txtHeader.setText(name);
+            vh.txtHeader.setText(name.getSongName());
             vh.txtHeader.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("outp", name);
+                    Log.i("outp", name.getSongName());
+
                 }
             });
 
-            vh.txtFooter.setText("Artist goes here");
+            String inf =name.getAlbum()+" - "+name.getArtist();
+            vh.txtFooter.setText(inf);
         }
     }
 
