@@ -5,7 +5,9 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.SeekBar;
 
 import com.example.evan.seniorproject.db.Song;
 import com.example.evan.seniorproject.db.SongDatabase;
@@ -122,7 +124,10 @@ public class PlaybackManager {
             mp.prepare();
             mp.seekTo(position);
             mp.start();
+
+            updateNowPlayingSeekbar();
             updateNowPlaying();
+
         } catch (Exception e) {
             Log.e("error",e.getMessage());
         }
@@ -159,6 +164,11 @@ public class PlaybackManager {
 
     }
 
+    private void updateNowPlayingSeekbar()
+    {
+        context.updateNowPlayingSeekbar();
+    }
+
     private void updateContext(Context c)
     {
         if(c.getContextType()==Context.Contexts.ALL_SONGS_IN_LIBRARY_SPECIFIC)
@@ -167,6 +177,43 @@ public class PlaybackManager {
             queue.setPosition(c.getPosition());
             Log.i("context","specific "+queue.current());
         }
+    }
+
+    public int getDuration()
+    {
+        return mp.getDuration();
+    }
+
+    public int getCurrentPosition()
+    {
+        return mp.getCurrentPosition();
+    }
+
+    public int getDurationSeconds()
+    {
+        return mp.getDuration()/1000;
+    }
+
+    public int getCurrentPositionSeconds()
+    {
+        return mp.getCurrentPosition()/1000;
+    }
+
+    public String getDurationFormattedString()
+    {
+        return getDurationSeconds()/60 +":"+getDurationSeconds()%60;
+    }
+
+    public String getCurrentPositionFormattedString()
+    {
+        return getCurrentPositionSeconds()/60 +":"+getCurrentPositionSeconds()%60;
+    }
+
+    public String getTimeRemainingFormattedString()
+    {
+        int t = getDurationSeconds()-getCurrentPositionSeconds();
+        return t/60+":"+t%60;
+
     }
 
     ////////////////////////////inner classes////////////////////////////////

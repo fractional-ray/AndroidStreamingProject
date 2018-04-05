@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,10 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     RecyclerView songRecyclerView;
     RecyclerView.Adapter songAdapter;
     RecyclerView.LayoutManager layoutManager;
+    SeekBar seekBar;
+
+    TextView ellapsedT;
+    TextView remainingT;
 
     SongDatabase songDB;
 
@@ -52,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
         requestPermissionsRuntime();
 
+        remainingT = findViewById(R.id.timeRemainingLabel);
+        ellapsedT = findViewById(R.id.timePassedLabel);
+
         pb = findViewById(R.id.songLoadWheel);
         pb.setIndeterminate(true);
         pb.setEnabled(true);
@@ -59,12 +67,17 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         pb = new ProgressBar(this);
         pb.setIndeterminate(true);
 
+
+        seekBar = findViewById(R.id.nowPlayingSeekBar);
+
 //        songScroll.addView(pb);
 
 
 
         playbackManager = new PlaybackManager(this);
         connectionManager = new ConnectionManagerAsyncTask(this);
+
+        setupListeners();
 
         Log.i("test","test");
 //        playbackManager.startManager();
@@ -160,11 +173,40 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         nowPlaying.setText(update);
     }
 
-    public void updateNowPlayingSeekbar(int maxLength)
+    public void updateNowPlayingSeekbar()
     {
-        SeekBar s = findViewById(R.id.nowPlayingSeekBar);
-        s.setMax(maxLength);
-        s.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBar.setMax(playbackManager.getDuration());
+
+        final Handler seekHandler = new Handler();
+
+        this.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                    int mCurrentPosition = playbackManager.getCurrentPosition();
+                    SeekBar s = findViewById(R.id.nowPlayingSeekBar);
+                    s.setProgress(mCurrentPosition);
+                    updateTimeLabels();
+                seekHandler.postDelayed(this, 1000);
+            }
+        });
+    }
+
+    public void updateTimeLabels()
+    {
+        ellapsedT.setText(playbackManager.getCurrentPositionFormattedString());
+        remainingT.setText(playbackManager.getTimeRemainingFormattedString());
+    }
+
+    @Override
+    public void onTaskComplete(ArrayList<Song> a) {
+        playbackManager.startManager(a);
+    }
+
+    private void setupListeners()
+    {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -179,16 +221,10 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser){
-                    playbackManager.seekTo(progress * 1000);
+                    playbackManager.seekTo(progress);
+                    updateTimeLabels();
                 }
             }
         });
-    }
-
-
-
-    @Override
-    public void onTaskComplete(ArrayList<Song> a) {
-        playbackManager.startManager(a);
     }
 }
