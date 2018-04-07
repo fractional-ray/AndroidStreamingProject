@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
     PlaybackManager playbackManager;
-    ConnectionManagerAsyncTask connectionManager;
+    ConnectionManager connectionManager;
     TextView nowPlaying;
 //    LinearLayout songScroll;
 
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
 
         playbackManager = new PlaybackManager(this);
-        connectionManager = new ConnectionManagerAsyncTask(this);
+        connectionManager = new ConnectionManager(this);
 
         setupListeners();
 
@@ -156,7 +157,9 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
     public void connect(View v)
     {
-        connectionManager.connect();
+        Log.i("connect","clicked");
+        EditText t = findViewById(R.id.ipText);
+        connectionManager.connect(t.getText().toString());
     }
 
     public void refreshLibrary(View v){

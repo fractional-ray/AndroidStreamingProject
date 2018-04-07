@@ -1,10 +1,14 @@
 package com.example.evan.seniorproject;
 
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * Created by Evan on 2/18/2018.
@@ -24,16 +29,24 @@ public class ConnectionManagerAsyncTask {
     static int port = 2222;
     static BufferedReader in;
     static DataOutputStream out;
+    static ByteArrayOutputStream byteOut;
     private static boolean running = false;
     final static int BUFFER_SIZE = 1024;
+   static ArrayList<Byte> data;
+    static ConnectionManager parent;
+    static String ip;
 
     MainActivity context;
+    static AudioTrack audioTrack;
 
-    ConnectionManagerAsyncTask(MainActivity context) {
+    ConnectionManagerAsyncTask(MainActivity context, ArrayList<Byte> data,ConnectionManager parent) {
         this.context = context;
+        this.parent = parent;
+        this.data = data;
     }
 
-    void connect() {
+    void connect(String ip) {
+        this.ip = ip;
         ConnectionTask ct = new ConnectionTask();
 
         ct.execute();
@@ -47,7 +60,8 @@ public class ConnectionManagerAsyncTask {
         protected Void doInBackground(Void... voids) {
             Log.i("connection test", "opened");
             try {
-                Socket socket = new Socket("192.168.1.101", 5000);
+                Socket socket = new Socket(ip, 5000);
+                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_STEREO,AudioFormat.ENCODING_PCM_16BIT,5000,AudioTrack.MODE_STREAM);
                 out = new DataOutputStream(socket.getOutputStream());
 
 
@@ -59,31 +73,42 @@ public class ConnectionManagerAsyncTask {
                 String line;
 
                 FileOutputStream newFile = new FileOutputStream(path+"test.mp3");
+                byteOut = new ByteArrayOutputStream(1024);
                 byte[] by = new byte[BUFFER_SIZE];
                 int read;
+
+                audioTrack.play();
+
                 do{
                     read = inS.read(by,0,BUFFER_SIZE);
-                    newFile.write(by,0,read);
+                    int write = audioTrack.write(by, 0, read);
 
-//                    Log.i("message",line);
+//                    Log.i("connect",read+"");
+//                    if(data==null)
+//                        Log.i("connect","null");
+//                    for(int i =0; i < read;i++)
+//                    {
+//                        data.add(by[i]);
+//                    }
+
+//                    byteOut.write(data,0,read);
+
+//                    parent.incrementSegmentsReceived();
+                    //                    Log.i("message",line);
                 }while(read>0);
 
 
 
-//                Log.i("message",line);
+
                 running = true;
 
-//                do {
-//                    Log.i("reading","reading");
-//                    line = in.readLine();
-//                    Log.i("line", line);
-//                } while (!line.equals("-1"));
 
                 socket.close();
                 running = false;
             } catch (Exception e) {
-                Log.e("error", e.getMessage());
+                Log.e("error stream", e.getMessage()+ " "+e.getClass());
             }
+
             Log.i("connection test", "closed");
             return null;
         }

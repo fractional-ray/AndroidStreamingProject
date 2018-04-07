@@ -24,7 +24,7 @@ public class Server
 	{
 		try
 		{
-			Path path = Paths.get("C:\\Users\\Evan\\Music\\Music\\Metal\\current\\Chthonic\\Takasago Army\\02 Legacy Of The Seediq.m4a");
+			Path path = Paths.get("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior Project\\m\\ff.wav");
 			byte[] b = Files.readAllBytes(path);
 			
 			int portNum = 5000;
@@ -32,7 +32,7 @@ public class Server
 			
 			while(true)
 			{
-				System.out.println("waiting for connection:");
+				System.out.println("waiting for connection (v2):");
 				Socket clientSocket = ss.accept();
 				System.out.println("Got client");
 				
@@ -41,9 +41,9 @@ public class Server
 				String line = in.readLine();
 				
 				DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+				int c=0;
 				
-				
-				System.out.println(line);
+//				System.out.println(line);
 				
 				if(line.equals("0"))
 				{
@@ -53,14 +53,16 @@ public class Server
 						
 						while(rc>0)
 						{
-							System.out.println(rc);
+//							System.out.println(rc);
 							out.write(by,0,rc);
 							rc = s.read(by,0,BUFFER_SIZE);
+							c++;
 						}
 						s.close();
 						
 //						out.write("\r\n".getBytes());
 //					out.write("-1\r\n".getBytes());
+						System.out.println(c);
 				}
 				else
 				{
@@ -68,6 +70,7 @@ public class Server
 					out.write("other\r\n".getBytes());
 				}
 				
+				clientSocket.close();
 //				out.write((line+"\r\n").getBytes());
 //				for(int i = 0; true ; i ++)
 //				{

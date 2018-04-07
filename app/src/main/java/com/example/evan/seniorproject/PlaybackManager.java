@@ -32,6 +32,8 @@ public class PlaybackManager {
     private ArrayList<String> currentQueue;
     private ArrayList<Song> songs;
 
+
+
     private SongPlayQueue<Song> queue;
 
     int currentPosition = 0;
