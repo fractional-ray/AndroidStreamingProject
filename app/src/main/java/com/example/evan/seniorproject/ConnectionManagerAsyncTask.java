@@ -61,7 +61,7 @@ public class ConnectionManagerAsyncTask {
             Log.i("connection test", "opened");
             try {
                 Socket socket = new Socket(ip, 5000);
-                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_STEREO,AudioFormat.ENCODING_PCM_16BIT,5000,AudioTrack.MODE_STREAM);
+                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_STEREO,AudioFormat.ENCODING_PCM_16BIT,2500,AudioTrack.MODE_STREAM);
                 out = new DataOutputStream(socket.getOutputStream());
 
 

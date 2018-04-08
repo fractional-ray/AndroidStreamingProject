@@ -24,7 +24,7 @@ public class Server
 	{
 		try
 		{
-			Path path = Paths.get("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior Project\\m\\ff.wav");
+			Path path = Paths.get("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior Project\\m\\tests\\converted\\d.wav");
 			byte[] b = Files.readAllBytes(path);
 			
 			int portNum = 5000;
