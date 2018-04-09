@@ -46,7 +46,14 @@ public class ServerPanel extends JPanel
 
 	JFileChooser fc = new JFileChooser();
 	
-	public ServerPanel() {
+	ServerController parent;
+	
+	ArrayList<File> songs;
+	
+	public ServerPanel(ServerController parent) {
+		
+		this.parent = parent;
+		
 		libraryArea.setEditable(false);
 		
 		
@@ -200,6 +207,7 @@ public class ServerPanel extends JPanel
 	{
 		File dir = new File(chooseNewDirectory());
 		updateLibraryArea(dir);
+		currentDirectoryField.setText(dir.getAbsolutePath());
 	}
 	
 	private void updateLibraryArea(File dir)
@@ -211,6 +219,7 @@ public class ServerPanel extends JPanel
 			loadFile(dir,a);
 			updateLibraryAreaWithList(a);
 			songNumberLabel.setText(a.size()+" songs");
+			songs = a;
 		}
 		else
 		{
@@ -292,6 +301,18 @@ public class ServerPanel extends JPanel
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public ArrayList<String> getSongList()
+	{
+		ArrayList<String> a = new ArrayList<String>();
+		
+		for(File f: songs)
+		{
+			a.add(f.getAbsolutePath());
+		}
+		
+		return a;
 	}
 	
 	    

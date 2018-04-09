@@ -18,10 +18,12 @@ public class ServerFrame extends JFrame
 	private static final long serialVersionUID = -2716404967062765967L;
 	
 	private ServerPanel currentPanel;
+	ServerController parent;
 	
-	public ServerFrame()
+	public ServerFrame(ServerController parent)
 	{
-		currentPanel = new ServerPanel();
+		this.parent = parent;
+		currentPanel = new ServerPanel(parent);
 		
 		setupFrame();
 	}
@@ -39,6 +41,11 @@ public class ServerFrame extends JFrame
 		this.setSize(800,280);
 		this.setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	public ServerPanel getPanel()
+	{
+		return currentPanel;
 	}
 	
 }
