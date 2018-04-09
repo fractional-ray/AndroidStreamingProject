@@ -29,7 +29,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Server
 {
-	
+
 	Path path = Paths.get("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior Project\\m\\tests2\\unconverted\\sky.mp3");
 
 	final static int BUFFER_SIZE = 4096;
@@ -40,7 +40,7 @@ public class Server
 	private static ServerSocket ss = null;
 
 	ServerController parent;
-	
+
 	public Server(ServerController parent)
 	{
 		this.parent = parent;
@@ -102,16 +102,28 @@ public class Server
 				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 				String line = in.readLine();
+				System.out.println(line);
 
 				DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
 
 				if (line.charAt(0) == ClientCodes.PLAY)
 				{
-					System.out.println("Finished streaming " + streamFile(out, clientSocket, parent.getSongList().get(0)) + " segments");
+					String parsed = parseSongPlayRequest(line);
+					if (parsed != null)
+					{
+						System.out.println(parsed);
+						System.out.println("Finished streaming " + streamFile(out, clientSocket, parsed) + " segments");
+					}
+					else
+					{
+						//////////////////Make this send something back to client notifying.
+						out.write("1<>Invalid File\r\n".getBytes());
+						System.err.println("ERROR WITH SONG REQUEST");
+					}
 				}
 				else if (line.charAt(0) == ClientCodes.STOP)
 				{
-					
+
 				}
 				else if (line.charAt(0) == ClientCodes.GET_LIST)
 				{
@@ -119,7 +131,7 @@ public class Server
 				}
 				else if (line.charAt(0) == ClientCodes.DISCONNECT)
 				{
-					
+
 				}
 				else
 				{
@@ -143,6 +155,7 @@ public class Server
 	private static int streamFile(DataOutputStream out, Socket s, String filePath) throws IOException, UnsupportedAudioFileException
 	{
 
+		out.write("0\r\n".getBytes());
 		System.out.println(filePath);
 		int c = 0;
 
@@ -182,32 +195,52 @@ public class Server
 
 		return c;
 	}
-	
+
 	/**
-	 * Constructs the list of songs to send to the app. 
-	 * Format is < + filename1 + > + < + filename2 + > + ... + 0
+	 * Constructs the list of songs to send to the app. Format is <> + filename1
+	 * + <> + filename2 + <> + ... + <> 0
+	 * 
 	 * @return
 	 */
 	private String constructSongList()
 	{
 		ArrayList<String> a = parent.getSongList();
-		String construct = "";
-		
-		for(String aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaah:a)
+		String construct = "0<>";
+
+		for (String aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaah : a)
 		{
-			construct+="<"+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaah+">";
+			construct += aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaah + "<>";
 		}
-		
-		return construct+"0";
-		
+
+		return construct + "0";
+
 	}
-	
-	private class ClientCodes{
+
+	private String parseSongPlayRequest(String songPlay)
+	{
+		String[] s = songPlay.split("<>");
+		System.out.println(s.length);
+		for(String ss:s)
+		{
+			System.out.println(ss);
+		}
+		if (s.length == 3 && s[0].equals(ClientCodes.PLAY + "") && s[2].equals(ClientCodes.PLAY + ""))
+		{
+			System.out.println("Test");
+			return s[1];
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	private class ClientCodes
+	{
 		static final char PLAY = '0';
 		static final char STOP = '1';
 		static final char GET_LIST = '2';
 		static final char DISCONNECT = '3';
-		
-		
+
 	}
 }

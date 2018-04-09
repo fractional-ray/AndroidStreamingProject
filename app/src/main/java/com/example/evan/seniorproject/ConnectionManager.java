@@ -1,19 +1,17 @@
 package com.example.evan.seniorproject;
 
-import android.content.*;
-import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.example.evan.seniorproject.stream.AudioTrackThread;
-import com.example.evan.seniorproject.stream.ByteDataSource;
+
 import com.example.evan.seniorproject.stream.StreamThread;
 
-import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 /**
  * Created by Evan on 4/6/2018.
@@ -21,84 +19,42 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionManager {
 
-    final int PORT_NUMBER = 2222;
+    final static int PORT_NUMBER = 5000;
     String ip;
 
     public static volatile ArrayList<Byte> data = new ArrayList<Byte>();
     ConnectionManagerAsyncTask task;
-    ByteDataSource source;
-    MediaPlayer mpC;
-    boolean started=false;
+
     public final static int BUFFER_SIZE = 4096;
 
     private PipedOutputStream baos;
     private PipedInputStream bais;
 
+    ArrayList<String> remoteFiles;
 
-    public static volatile int segmentsPlayed = 0;
-//    AtomicInteger segPlayed;
-
-
-    public static volatile int segmentsReceived = 0;
+    MainActivity context;
 
 
     public ConnectionManager(MainActivity context){
-        task = new ConnectionManagerAsyncTask(context,data,this);
+        this.context = context;
+
+        remoteFiles = new ArrayList<String>();
 
     }
 
-    public void initialize()
+
+    public void connect(String ip) {
+        task = new ConnectionManagerAsyncTask(this);
+        task.runTask(ip,ClientCodes.GET_LIST);
+        this.ip = ip;
+    }
+
+    public void updateSongList(String s)
     {
-        source = new ByteDataSource(data,this);
+        loadServerSongStringIntoList(s);
     }
 
-    public int getSegmentsPlayed()
-    {
-        return segmentsPlayed;
-    }
-
-    public static int getSegmentsReceived() {
-        return segmentsReceived;
-    }
-
-    public static void setSegmentsPlayed(int segmentsPlayed) {
-        ConnectionManager.segmentsPlayed = segmentsPlayed;
-    }
-
-    public static void setSegmentsReceived(int segmentsReceived) {
-        ConnectionManager.segmentsReceived = segmentsReceived;
-    }
-
-    public void incrementSegmentsReceived()
-    {
-        segmentsReceived++;
-        Log.i("segments",segmentsReceived+"");
-        if(!started && segmentsReceived>20)
-        {
-            started = true;
-            start();
-        }
-//        else if(segmentsReceived-segmentsPlayed>20 && !mpC.isPlaying() && mpC.getCurrentPosition()>1)
-//        {
-//            mpC.start();
-//        }
-    }
-
-    public void          incrementSegmentsPlayed()
-    {
-        segmentsPlayed++;
-//        if(segmentsPlayed == segmentsReceived && mpC!= null && mpC.isPlaying())
-//        {
-//            mpC.pause();
-//        }
-    }
-
-
-    public static void test(){
-
-    }
-
-    public void connect(String ip)
+    public void play()
     {
         Object lock = new Object();
 
@@ -111,11 +67,10 @@ public class ConnectionManager {
         }
 
 
-        this.ip = ip;
-        segmentsPlayed=0;
-        segmentsReceived=0;
 
-        StreamThread st = new StreamThread(ip,PORT_NUMBER,this,baos,lock);
+
+        String file = remoteFiles.get(3);
+        StreamThread st = new StreamThread(ip,PORT_NUMBER,this,baos,lock,file);
         AudioTrackThread att = new AudioTrackThread(ip,PORT_NUMBER,this,bais,lock);
 
         Thread t1 = new Thread(st);
@@ -125,30 +80,60 @@ public class ConnectionManager {
         t1.start();
         t2.start();
 
-//        task.connect(ip);
         Log.i("connect","test");
 
 
     }
 
-
-
-    private void start()
+    public void loadServerSongStringIntoList(String serverString)
     {
-        Log.i("player","starting player");
-        mpC = new MediaPlayer();
-        mpC.reset();
-        try {
-            mpC.setDataSource(source);
-            mpC.prepare();
-            mpC.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("Illegal state",e.getMessage());
+        Log.i("song",serverString);
+        String[] s = serverString.split("<>");
+
+        if(s[0].equals("0")&&s.length>2) {
+
+            for (int i = 1; i < s.length-1; i++) {
+                String s1 = s[i];
+                remoteFiles.add(s1);
+                Log.i("song",s1);
+            }
+            if(s[s.length-1].equals("0"))
+            {
+                Log.i("connect","all good with song list from server");
+            }
+
         }
-//        catch (Exception e)
-//        {
-//            Log.e("Illegal state",e.getMessage());
-//        }
+        else
+        {
+            Log.e("connect","error in song list from server");
+        }
+    }
+
+    public boolean hasSongsLoaded()
+    {
+        return remoteFiles.size() != 0;
+    }
+
+    final class ClientCodes {
+
+        static final char PLAY = '0';
+        static final char STOP = '1';
+        static final char GET_LIST = '2';
+        static final char DISCONNECT = '3';
+
+        char currentCode = PLAY;
+
+        ClientCodes(char code) {
+            currentCode = code;
+        }
+
+        public char getCurrentCode() {
+            return currentCode;
+        }
+
+        public void setCurrentCode(char code) {
+            currentCode = code;
+        }
+
     }
 }

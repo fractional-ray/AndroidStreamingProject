@@ -25,14 +25,14 @@ public class ByteDataSource extends MediaDataSource {
 
     @Override
     public int readAt(long srcPos, byte[] bytes, int buffOffset, int size) throws IOException {
-        cm.incrementSegmentsPlayed();
-
-        int srcPointer = (int) srcPos;
-        for (int buffPointer = buffOffset; buffPointer < size; buffPointer++,srcPointer++) {
-            bytes[buffPointer]=data.get(srcPointer);
-
-        }
-
+//        cm.incrementSegmentsPlayed();
+//
+//        int srcPointer = (int) srcPos;
+//        for (int buffPointer = buffOffset; buffPointer < size; buffPointer++,srcPointer++) {
+//            bytes[buffPointer]=data.get(srcPointer);
+//
+//        }
+//
 
         return size;
     }

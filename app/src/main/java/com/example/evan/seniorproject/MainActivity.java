@@ -42,12 +42,20 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
     TextView ellapsedT;
     TextView remainingT;
+    EditText ipText;
 
     SongDatabase songDB;
+
+    final String STARTING_IP = "192.168.1.107";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        ipText = findViewById(R.id.ipText);
+
+        ipText.setText(STARTING_IP);
 
         nowPlaying = findViewById(R.id.nowPlayingLabel);
 //        songScroll = findViewById(R.id.linLayoutScroll);
@@ -118,21 +126,6 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         songAdapter = new SongAdapter(s,this);
         songRecyclerView.setAdapter(songAdapter);
 
-
-//        songScroll.removeView(pb);
-//        for(int i = 0; i < s.size();i++) {
-//
-//            final MainSongScrollButton b = new MainSongScrollButton(this,s.get(i),i);
-//            b.setOnClickListener(new View.OnClickListener() {
-//                                     @Override
-//                                     public void onClick(View view) {
-//                                        Log.i("toPlay",b.getReference());
-//                                         playAndUpdateContextAll(b.getPosition());
-//                                     }
-//                                 }
-//            );
-//            songScroll.addView(b);
-//        }
     }
 
     public void playAndUpdateContextAll(int toPlay)
@@ -160,6 +153,11 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         Log.i("connect","clicked");
         EditText t = findViewById(R.id.ipText);
         connectionManager.connect(t.getText().toString());
+    }
+
+    public void buttonA(View v)
+    {
+        connectionManager.play();
     }
 
     public void refreshLibrary(View v){
@@ -201,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         ellapsedT.setText(playbackManager.getCurrentPositionFormattedString());
         remainingT.setText(playbackManager.getTimeRemainingFormattedString());
     }
+
+
 
     @Override
     public void onTaskComplete(ArrayList<Song> a) {

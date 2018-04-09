@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -25,123 +26,87 @@ import java.util.ArrayList;
 
 public class ConnectionManagerAsyncTask {
 
-    final static String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/music/";
-    static String hostName = "192.168.1.117";
-    static int port = 2222;
+
+
+
     static BufferedReader in;
     static DataOutputStream out;
-    static ByteArrayOutputStream byteOut;
-    private static boolean running = false;
-    final static int BUFFER_SIZE = 1024;
-   static ArrayList<Byte> data;
+
     static ConnectionManager parent;
     static String ip;
 
-    MainActivity context;
-    static AudioTrack audioTrack;
 
-    ConnectionManagerAsyncTask(MainActivity context, ArrayList<Byte> data,ConnectionManager parent) {
-        this.context = context;
+
+
+    ConnectionManagerAsyncTask(ConnectionManager parent) {
+
         this.parent = parent;
-        this.data = data;
+
     }
 
-    void connect(String ip) {
+    void runTask(String ip, char code) {
         this.ip = ip;
-        ConnectionTask ct = new ConnectionTask();
+
+        ConnectionTask ct = new ConnectionTask(code);
 
         ct.execute();
-
     }
 
-    private class ConnectionTask extends AsyncTask<Void, Void, Void> {
+    private static class ConnectionTask extends AsyncTask<Void, Void, String> {
 
+
+        char code;
+
+        ConnectionTask(char code)
+        {
+            this.code = code;
+        }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected String doInBackground(Void... voids) {
+
             Log.i("connection test", "opened");
             try {
-                Socket socket = new Socket(ip, 5000);
-                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_STEREO,AudioFormat.ENCODING_PCM_16BIT,AudioTrack.getMinBufferSize(14400,AudioFormat.CHANNEL_OUT_STEREO,AudioFormat.ENCODING_PCM_16BIT),AudioTrack.MODE_STREAM);
-                out = new DataOutputStream(socket.getOutputStream());
 
-                out.write("0\r\n".getBytes());
-                out.flush();
+                if(code == ConnectionManager.ClientCodes.GET_LIST)
+                {
+                    return getSongList();
+                }
 
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                BufferedInputStream inS = new BufferedInputStream(socket.getInputStream());
-                String line;
-
-                FileOutputStream newFile = new FileOutputStream(path+"test.mp3");
-//                byteOut = new ByteArrayOutputStream(1024);
-                byte[] by = new byte[BUFFER_SIZE];
-                int read;
-
-
-
-                int accumulated = 0;
-
-                read = inS.read(by,0,BUFFER_SIZE);
-                accumulated += audioTrack.write(by, 0, read);
-
-                audioTrack.play();
-
-                do{
-
-                    long start = System.nanoTime();
-                    read = inS.read(by,0,BUFFER_SIZE);
-                    accumulated += audioTrack.write(by, 0, read);
-                    Long end = System.nanoTime();
-
-
-
-                    Log.i("connect","time "+(end-start));
-//                    int bufferPlaybackFrame = (audioTrack.getPlaybackHeadPosition() & 0xFF)*32;
-
-//                    Log.i("connect",accumulated+"");
-//                    Log.i("connect",bufferPlaybackFrame+" p");
-//                        if(accumulated - bufferPlaybackFrame<100)
-//                        {
-//                            audioTrack.pause();
-//                        }
-//                    else
-//                    {
-//                        if(audioTrack.getPlayState()==AudioTrack.PLAYSTATE_PAUSED)
-//                        {
-//                            audioTrack.play();
-//                        }
-//                    }
-
-//                    Log.i("connect",read+"");
-//                    if(data==null)
-//                        Log.i("connect","null");
-//                    for(int i =0; i < read;i++)
-//                    {
-//                        data.add(by[i]);
-//                    }
-
-//                    byteOut.write(data,0,read);
-
-//                    parent.incrementSegmentsReceived();
-                    //                    Log.i("message",line);
-                }while(read>0);
-
-
-
-
-                running = true;
-
-
-                socket.close();
-                running = false;
             } catch (Exception e) {
                 Log.e("error stream", e.getMessage()+ " "+e.getClass());
             }
-
-            Log.i("connection test", "closed");
             return null;
         }
+
+        private String getSongList() throws IOException {
+            Socket socket = new Socket(ip, ConnectionManager.PORT_NUMBER);
+            out = new DataOutputStream(socket.getOutputStream());
+
+            out.write((code+"\r\n").getBytes());
+            out.flush();
+
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedInputStream inS = new BufferedInputStream(socket.getInputStream());
+
+            BufferedReader serverReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            String serverMessage = serverReader.readLine();
+
+            socket.close();
+
+            return serverMessage;
+        }
+
+        @Override
+        protected void onPostExecute(String result)
+        {
+            parent.updateSongList(result);
+        }
+
     }
+
+
 }
 
 

@@ -35,14 +35,16 @@ public class StreamThread implements Runnable{
     PipedOutputStream baos;
     PipedInputStream bais;
     Object lock;
+    String file;
 
-    public StreamThread(String ip, int port, ConnectionManager parent, PipedOutputStream baos, Object lock)
+    public StreamThread(String ip, int port, ConnectionManager parent, PipedOutputStream baos, Object lock,String file)
     {
         this.ip = ip;
         this.port = port;
         this.parent = parent;
         this.baos = baos;
         this.lock = lock;
+        this.file = file;
     }
 
     @Override
@@ -52,37 +54,47 @@ public class StreamThread implements Runnable{
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
         try {
-            Socket socket = new Socket(ip, 5000);
+            Socket socket = new Socket(ip, port);
 
             out = new DataOutputStream(socket.getOutputStream());
 
-            out.write("0\r\n".getBytes());
+//            out.write("0\r\n".getBytes());
+            out.write(("0<>"+file+"<>0\r\n").getBytes());
             out.flush();
 
             BufferedInputStream inS = new BufferedInputStream(socket.getInputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String servResponse = reader.readLine();
+            reader.close();
 
-            byte[] by = new byte[ConnectionManager.BUFFER_SIZE];
-            int read;
+            if(servResponse.charAt(0)=='0') {
 
-            int accumulated = 0;
-            boolean notified = false;
+                byte[] by = new byte[ConnectionManager.BUFFER_SIZE];
+                int read;
 
-            do{
-                read = inS.read(by,0,ConnectionManager.BUFFER_SIZE);
-                accumulated+=read;
-                baos.write(by,0,read);
-                baos.flush();
+                int accumulated = 0;
+                boolean notified = false;
 
-                if(!notified && accumulated > AudioTrackThread.AT_BUFFER_SIZE/2)
-                {
-                    synchronized (lock) {
-                        lock.notifyAll();
+                do {
+                    read = inS.read(by, 0, ConnectionManager.BUFFER_SIZE);
+                    accumulated += read;
+                    baos.write(by, 0, read);
+                    baos.flush();
+
+                    if (!notified && accumulated > AudioTrackThread.AT_BUFFER_SIZE / 2) {
+                        synchronized (lock) {
+                            lock.notifyAll();
+                        }
+                        notified = true;
                     }
-                    notified = true;
-                }
 
-            }while(read>0);
+                } while (read > 0);
 
+            }
+            else
+            {
+                Log.e("connect",servResponse);
+            }
             socket.close();
 
         } catch (Exception e) {
