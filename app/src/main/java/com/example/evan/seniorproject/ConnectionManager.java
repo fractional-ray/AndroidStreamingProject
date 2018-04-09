@@ -4,9 +4,14 @@ import android.content.*;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import com.example.evan.seniorproject.stream.AudioTrackThread;
 import com.example.evan.seniorproject.stream.ByteDataSource;
+import com.example.evan.seniorproject.stream.StreamThread;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,11 +21,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionManager {
 
+    final int PORT_NUMBER = 2222;
+    String ip;
+
     public static volatile ArrayList<Byte> data = new ArrayList<Byte>();
     ConnectionManagerAsyncTask task;
     ByteDataSource source;
     MediaPlayer mpC;
     boolean started=false;
+    public final static int BUFFER_SIZE = 4096;
+
+    private PipedOutputStream baos;
+    private PipedInputStream bais;
+
 
     public static volatile int segmentsPlayed = 0;
 //    AtomicInteger segPlayed;
@@ -87,13 +100,38 @@ public class ConnectionManager {
 
     public void connect(String ip)
     {
+        Object lock = new Object();
+
+        try {
+            baos= new PipedOutputStream();
+            bais = new PipedInputStream(baos,AudioTrackThread.AT_BUFFER_SIZE);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        this.ip = ip;
         segmentsPlayed=0;
         segmentsReceived=0;
-        task.connect(ip);
+
+        StreamThread st = new StreamThread(ip,PORT_NUMBER,this,baos,lock);
+        AudioTrackThread att = new AudioTrackThread(ip,PORT_NUMBER,this,bais,lock);
+
+        Thread t1 = new Thread(st);
+        Thread t2 = new Thread(att);
+
+
+        t1.start();
+        t2.start();
+
+//        task.connect(ip);
         Log.i("connect","test");
 
 
     }
+
+
 
     private void start()
     {

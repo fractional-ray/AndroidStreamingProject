@@ -19,12 +19,12 @@ import java.nio.file.Paths;
 
 public class Server
 {
-	final static int BUFFER_SIZE = 1024;
+	final static int BUFFER_SIZE = 4096;
 	public static void main(String[] args)
 	{
 		try
 		{
-			Path path = Paths.get("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior Project\\m\\tests\\converted\\d.wav");
+			Path path = Paths.get("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior Project\\m\\tests2\\converted\\a.wav");
 			byte[] b = Files.readAllBytes(path);
 			
 			int portNum = 5000;
@@ -49,7 +49,9 @@ public class Server
 				{
 					byte[] by = new byte[BUFFER_SIZE];
 					FileInputStream s = new FileInputStream(path.toString());
-						int rc = s.read(by);
+						int rc = s.read(by,0,BUFFER_SIZE);
+						
+						
 						
 						while(rc>0)
 						{

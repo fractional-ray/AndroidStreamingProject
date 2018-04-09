@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -53,7 +54,7 @@ public class ConnectionManagerAsyncTask {
 
     }
 
-    private static class ConnectionTask extends AsyncTask<Void, Void, Void> {
+    private class ConnectionTask extends AsyncTask<Void, Void, Void> {
 
 
         @Override
@@ -61,27 +62,55 @@ public class ConnectionManagerAsyncTask {
             Log.i("connection test", "opened");
             try {
                 Socket socket = new Socket(ip, 5000);
-                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_STEREO,AudioFormat.ENCODING_PCM_16BIT,2500,AudioTrack.MODE_STREAM);
+                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_STEREO,AudioFormat.ENCODING_PCM_16BIT,AudioTrack.getMinBufferSize(14400,AudioFormat.CHANNEL_OUT_STEREO,AudioFormat.ENCODING_PCM_16BIT),AudioTrack.MODE_STREAM);
                 out = new DataOutputStream(socket.getOutputStream());
-
 
                 out.write("0\r\n".getBytes());
                 out.flush();
 
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                InputStream inS = socket.getInputStream();
+                BufferedInputStream inS = new BufferedInputStream(socket.getInputStream());
                 String line;
 
                 FileOutputStream newFile = new FileOutputStream(path+"test.mp3");
-                byteOut = new ByteArrayOutputStream(1024);
+//                byteOut = new ByteArrayOutputStream(1024);
                 byte[] by = new byte[BUFFER_SIZE];
                 int read;
+
+
+
+                int accumulated = 0;
+
+                read = inS.read(by,0,BUFFER_SIZE);
+                accumulated += audioTrack.write(by, 0, read);
 
                 audioTrack.play();
 
                 do{
+
+                    long start = System.nanoTime();
                     read = inS.read(by,0,BUFFER_SIZE);
-                    int write = audioTrack.write(by, 0, read);
+                    accumulated += audioTrack.write(by, 0, read);
+                    Long end = System.nanoTime();
+
+
+
+                    Log.i("connect","time "+(end-start));
+//                    int bufferPlaybackFrame = (audioTrack.getPlaybackHeadPosition() & 0xFF)*32;
+
+//                    Log.i("connect",accumulated+"");
+//                    Log.i("connect",bufferPlaybackFrame+" p");
+//                        if(accumulated - bufferPlaybackFrame<100)
+//                        {
+//                            audioTrack.pause();
+//                        }
+//                    else
+//                    {
+//                        if(audioTrack.getPlayState()==AudioTrack.PLAYSTATE_PAUSED)
+//                        {
+//                            audioTrack.play();
+//                        }
+//                    }
 
 //                    Log.i("connect",read+"");
 //                    if(data==null)
