@@ -63,7 +63,7 @@ public class ConvertTest
 						byte[] n = getAudioDataBytes(b, new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, (float) 44100.0, 16, 2, 4, (float) (44100), false));
 
 						
-//						AudioSystem.wri
+
 						FileOutputStream fos = new FileOutputStream("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior Project\\m\\tests2\\converted\\" + p.getFileName() + "2.wav");
 						DataOutputStream output = new DataOutputStream(fos);
 						
@@ -92,13 +92,7 @@ public class ConvertTest
 						    }
 
 						    output.write(n);
-						
-						
-						
-						
-						
-//						break;
-						
+				
 					}
 				
 				}
@@ -132,78 +126,6 @@ public class ConvertTest
 		finally {
 			System.out.println("done");
 		}
-
-		// File a = new File(path.toString());
-		// getAudioDataByte()
-		// try
-		// {
-		// FileOutputStream o = new
-		// FileOutputStream("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior
-		// Project\\m\\a.wav");
-		// FileInputStream i = new FileInputStream(path.toString());
-		//
-		// ByteArrayInputStream bais = null;
-		// ByteArrayOutputStream baos = null;
-		// AudioInputStream sourceAIS = null;
-		// AudioInputStream convert1AIS = null;
-		// AudioInputStream convert2AIS = null;
-		//
-		// sourceAIS = AudioSystem.getAudioInputStream(i);
-		//
-
-		// AudioFormat sourceFormat = sourceAIS.getFormat();
-		// AudioFormat convertFormat = new
-		// AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-		// sourceFormat.getSampleRate(), 16, CHANNELS_STEREO,
-		// sourceFormat.getChannels()*2, sourceFormat.getSampleRate(), false);
-		// AudioFormat audioFormat = new AudioFormat()
-		//
-		//
-		// convert1AIS = AudioSystem.getAudioInputStream(convertFormat,
-		// sourceAIS);//target format and source stream
-		// convert2AIS = AudioSystem.getAudioInputStream(audioFormat,
-		// convert1AIS);
-		//
-		//// AudioFileFormat.Type.WAVE
-		//
-		// System.out.println("Sample rate (hz):
-		// "+sourceFormat.getSampleRate()+"\nSample Size in bits:
-		// "+sourceFormat.getSampleSizeInBits()+"\n# channels:
-		// "+sourceFormat.getChannels());
-		//
-		// baos = new ByteArrayOutputStream();
-		//
-		//// File f = new
-		// File("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior
-		// Project\\m\\a.wav");
-		////
-		//// AudioSystem.write(sourceAIS, AudioFileFormat.Type.WAVE, f);
-		//
-		// if(sourceFormat.getSampleRate()==44100.0 &&
-		// sourceFormat.getChannels()==2)
-		// {
-		// byte[] buff = new byte[1024];
-		// while(true){
-		// int readCount = convert1AIS.read(buff, 0, buff.length);
-		// if(readCount == -1){
-		// break;
-		// }
-		// o.write(buff, 0, readCount);
-		// }
-		// }
-		// else {
-		// System.out.println("Currently only supports files with 44100 hz
-		// sample rate and 2 channels (stereo)");
-		// }
-		//
-		//
-		//
-		// }
-		// catch (Exception e)
-		// {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 
 	}
 	
