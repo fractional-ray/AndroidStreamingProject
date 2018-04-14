@@ -6,6 +6,8 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.provider.SyncStateContract;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,8 +20,17 @@ public interface SongDAO {
     @Query("SELECT * FROM songs ORDER BY song_name ASC")
     List<Song> getAll();
 
+    @Query("SELECT DISTINCT artist FROM songs WHERE (artist IS NOT NULL) ORDER BY artist ASC")
+    List<String> getUniqueArtists();
+
+    @Query("SELECT DISTINCT album FROM songs ORDER BY album ASC")
+    List<String> getUniqueAlbums();
+
     @Query("SELECT * FROM songs WHERE album LIKE :album")
     List<Song> getAlbum(String album);
+
+    @Query("SELECT * FROM songs WHERE artist LIKE :artist")
+    List<Song> getArtistSongs(String artist);
 
     @Query("SELECT COUNT(*) from songs")
     int songCount();

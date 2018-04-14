@@ -35,8 +35,6 @@ public class Song {
     @ColumnInfo(name = "song_name")
     private String songName;
 
-
-
     @ColumnInfo(name = "file_name")
     private String fileName;
 

@@ -6,7 +6,10 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,16 +17,21 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v4.app.FragmentManager;
 
 import com.example.evan.seniorproject.db.Song;
 import com.example.evan.seniorproject.db.SongDatabase;
+import com.example.evan.seniorproject.fragmentManagement.FragmentPagerInterface;
+import com.example.evan.seniorproject.fragmentManagement.MusicFragmentAdapter;
 import com.example.evan.seniorproject.view.SongAdapter;
+import com.example.evan.seniorproject.view.SongFragment;
 
 import java.util.ArrayList;
 
@@ -35,16 +43,18 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 //    LinearLayout songScroll;
 
     ProgressBar pb;
-    RecyclerView songRecyclerView;
-    RecyclerView.Adapter songAdapter;
-    RecyclerView.LayoutManager layoutManager;
+
     SeekBar seekBar;
 
     TextView ellapsedT;
     TextView remainingT;
     EditText ipText;
 
+    ViewPager musicPager;
+    MusicFragmentAdapter musicFragmentAdapter;
+
     SongDatabase songDB;
+    FrameLayout fragmentContainer;
 
     final String STARTING_IP = "192.168.1.107";
 
@@ -59,10 +69,48 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
         nowPlaying = findViewById(R.id.nowPlayingLabel);
 //        songScroll = findViewById(R.id.linLayoutScroll);
-        songRecyclerView = (RecyclerView) findViewById(R.id.songRecyclerView);
-//        songRecyclerView.setScrollbarFadingEnabled(false);
-        songRecyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
+
+
+
+        musicFragmentAdapter = new MusicFragmentAdapter(getSupportFragmentManager());
+        musicPager = findViewById(R.id.musicFragmentPager);
+        musicPager.setAdapter(musicFragmentAdapter);
+
+        ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                FragmentPagerInterface f = (FragmentPagerInterface) musicFragmentAdapter.getItem(position);
+                f.onResumeFragment();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        };
+
+        musicPager.addOnPageChangeListener(pageChangeListener);
+
+//        fragmentContainer = findViewById(R.id.fragmentHolderLayout);
+//
+//        if(fragmentContainer != null)
+//        {
+//            if(savedInstanceState != null)
+//            {
+//                return;
+//            }
+//
+//            SongFragment songFragment = new SongFragment();
+//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//            ft.add(R.id.fragmentHolderLayout, songFragment);
+//            ft.commit();
+//
+//        }
 
         requestPermissionsRuntime();
 
@@ -116,15 +164,25 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         }
     }
 
+    public PlaybackManager getPlaybackManager() {
+        return playbackManager;
+    }
+
     public void updateSongScroll(ArrayList<Song> s)
     {
 
         ProgressBar p = findViewById(R.id.songLoadWheel);
         p.setVisibility(View.GONE);
 
-        songRecyclerView.setLayoutManager(layoutManager);
-        songAdapter = new SongAdapter(s,this);
-        songRecyclerView.setAdapter(songAdapter);
+        Fragment f = musicFragmentAdapter.getItem(musicPager.getCurrentItem());
+
+//        musicPager.getCurrentItem();
+
+        if(f instanceof SongFragment)
+        {
+            ((SongFragment) f).updateSongScroll(s);
+        }
+
 
     }
 
@@ -201,6 +259,10 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     }
 
 
+    public SongDatabase getSongDB()
+    {
+        return songDB;
+    }
 
     @Override
     public void onTaskComplete(ArrayList<Song> a) {

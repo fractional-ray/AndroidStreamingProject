@@ -75,9 +75,23 @@ public class FileManager extends AsyncTask<String,Integer,ArrayList<Song>> {
 
                     md.setDataSource(f.getAbsolutePath());
 
+                    String title = md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                    String artist = md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+                    String album = md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                    if(title == null)
+                    {
+                        title = "<unknown>";
+                    }
+                    if(artist == null)
+                    {
+                        artist = "<unknown>";
+                    }
+                    if(album == null)
+                    {
+                        album = "<unknown>";
+                    }
 
-
-                    com.example.evan.seniorproject.db.Song s = new Song(f.getAbsolutePath(), md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE), md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),md.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+                    com.example.evan.seniorproject.db.Song s = new Song(f.getAbsolutePath(),title,artist,album);
                     db.songDAO().insertAll(s);
                     fi.add(s);
 

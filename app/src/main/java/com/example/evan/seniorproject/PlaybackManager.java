@@ -218,6 +218,10 @@ public class PlaybackManager {
 
     }
 
+    public ArrayList<Song> getAllSongs()
+    {
+        return null;
+    }
     ////////////////////////////inner classes////////////////////////////////
 
     private class LoadFilesTask extends AsyncTask<String,Void,ArrayList<String>>

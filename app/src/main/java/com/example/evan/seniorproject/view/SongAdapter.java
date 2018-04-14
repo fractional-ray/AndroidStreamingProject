@@ -19,12 +19,12 @@ import java.util.ArrayList;
 
 public class SongAdapter extends RecyclerView.Adapter {
     private ArrayList<Song> files;
-    MainActivity context;
+    SongScrollContainer songScrollContainer;
 
-    public SongAdapter(ArrayList<Song> a, MainActivity context)
+    public SongAdapter(ArrayList<Song> a, SongScrollContainer songScrollContainer)
     {
         files = a;
-        this.context = context;
+        this.songScrollContainer = songScrollContainer;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SongAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     Log.i("outp", name.getSongName());
-                    context.playAndUpdateContextAll(position);
+                    songScrollContainer.playAndUpdateContext(null,position);
 
                 }
             });
