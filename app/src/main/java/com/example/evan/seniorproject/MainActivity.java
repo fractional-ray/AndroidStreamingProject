@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
     TextView ellapsedT;
     TextView remainingT;
-    EditText ipText;
+
 
     ViewPager musicPager;
     MusicFragmentAdapter musicFragmentAdapter;
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     ToggleButton shuffleButton;
     ToggleButton repeatButton;
 
-    final String STARTING_IP = "192.168.1.107";
+    public static final String STARTING_IP = "192.168.1.107";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +72,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
         playButton = findViewById(R.id.playButton);
 
-        ipText = findViewById(R.id.ipText);
 
-        ipText.setText(STARTING_IP);
 
         nowPlaying = findViewById(R.id.nowPlayingLabel);
 //        songScroll = findViewById(R.id.linLayoutScroll);
@@ -228,16 +226,16 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         playbackManager.skipForward();
     }
 
-    public void connect(View v)
+    public void connect(String ip)
     {
         Log.i("connect","clicked");
-        EditText t = findViewById(R.id.ipText);
-        connectionManager.connect(t.getText().toString());
+//        EditText t = findViewById(R.id.ipText);
+        connectionManager.connect(ip);
     }
 
     public void buttonA(View v)
     {
-        connectionManager.play();
+//        connectionManager.play();
     }
 
     public void refreshLibrary(View v){
@@ -284,6 +282,10 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     public SongDatabase getSongDB()
     {
         return songDB;
+    }
+
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
     }
 
     @Override

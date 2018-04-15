@@ -23,6 +23,7 @@ import java.util.List;
 
 public class PlaybackManager {
 
+    private boolean internetMode = false;
 
 //    SongDatabase db;
     MediaPlayer mp = new MediaPlayer();
@@ -229,6 +230,12 @@ public class PlaybackManager {
             Toast t = Toast.makeText(context,"No songs in album "+c.id,Toast.LENGTH_SHORT);
             t.show();
 
+        }
+        else if(c.getContextType()==Context.Contexts.REMOTE)
+        {
+            context.getConnectionManager().play(c.id);
+            internetMode=true;
+            return false;
         }
 
         return false;

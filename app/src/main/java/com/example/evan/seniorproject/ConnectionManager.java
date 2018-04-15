@@ -30,7 +30,7 @@ public class ConnectionManager {
     private PipedOutputStream baos;
     private PipedInputStream bais;
 
-    ArrayList<String> remoteFiles;
+    private ArrayList<String> remoteFiles;
 
     MainActivity context;
 
@@ -54,7 +54,7 @@ public class ConnectionManager {
         loadServerSongStringIntoList(s);
     }
 
-    public void play()
+    public void play(String file)
     {
         Object lock = new Object();
 
@@ -66,10 +66,7 @@ public class ConnectionManager {
             e.printStackTrace();
         }
 
-
-
-
-        String file = remoteFiles.get(3);
+//        String file = remoteFiles.get(3);
         StreamThread st = new StreamThread(ip,PORT_NUMBER,this,baos,lock,file);
         AudioTrackThread att = new AudioTrackThread(ip,PORT_NUMBER,this,bais,lock);
 
@@ -111,7 +108,13 @@ public class ConnectionManager {
 
     public boolean hasSongsLoaded()
     {
+        Log.i("connect","remote file size "+remoteFiles.size());
         return remoteFiles.size() != 0;
+    }
+
+    public ArrayList<String> getRemoteFiles()
+    {
+        return remoteFiles;
     }
 
     final class ClientCodes {

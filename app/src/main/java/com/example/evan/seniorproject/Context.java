@@ -5,7 +5,7 @@ package com.example.evan.seniorproject;
  */
 
 public class Context {
-    public enum  Contexts {ALL_SONGS_IN_LIBRARY_SPECIFIC,ALL_SONGS_IN_LIBRARY_BEGINNING,ALBUM,ARTIST,GENRE,PLAYLIST}
+    public enum  Contexts {ALL_SONGS_IN_LIBRARY_SPECIFIC,ALL_SONGS_IN_LIBRARY_BEGINNING,ALBUM,ARTIST,GENRE,PLAYLIST,REMOTE}
     Contexts c;
     String id;
     int position;
