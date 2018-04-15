@@ -88,15 +88,18 @@ public class PlaybackManager {
 
     /**
      * Play song or pause it if already playing.
+     * @return true if started playing false if stopped playing
      */
-    public void play()
+    public boolean play()
     {
         if(!mp.isPlaying()){
             play(0);
             updateNowPlaying();
+            return true;
         }
         else{
             mp.stop();
+            return false;
         }
     }
 
@@ -265,6 +268,16 @@ public class PlaybackManager {
     {
         int t = getDurationSeconds()-getCurrentPositionSeconds();
         return t/60+":"+t%60;
+
+    }
+
+    public void setRepeat(boolean repeat)
+    {
+
+    }
+
+    public void setShuffle(boolean shuffle)
+    {
 
     }
 

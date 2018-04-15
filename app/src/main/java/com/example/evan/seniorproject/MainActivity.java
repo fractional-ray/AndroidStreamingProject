@@ -16,6 +16,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -25,6 +27,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.FragmentManager;
+import android.widget.ToggleButton;
 
 import com.example.evan.seniorproject.db.Song;
 import com.example.evan.seniorproject.db.SongDatabase;
@@ -56,12 +59,18 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     SongDatabase songDB;
     FrameLayout fragmentContainer;
 
+    Button playButton;
+
+    ToggleButton shuffleButton;
+    ToggleButton repeatButton;
+
     final String STARTING_IP = "192.168.1.107";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        playButton = findViewById(R.id.playButton);
 
         ipText = findViewById(R.id.ipText);
 
@@ -69,6 +78,19 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
         nowPlaying = findViewById(R.id.nowPlayingLabel);
 //        songScroll = findViewById(R.id.linLayoutScroll);
+
+        shuffleButton = findViewById(R.id.shuffleToggleButton);
+        shuffleButton.setTextOff("");
+        shuffleButton.setTextOn("");
+        shuffleButton.setChecked(false);
+        shuffleButton.setBackgroundResource(R.drawable.ic_shuff);
+
+
+        repeatButton = findViewById(R.id.repeatToggleButton);
+        repeatButton.setTextOff("");
+        repeatButton.setTextOn("");
+        repeatButton.setChecked(false);
+        repeatButton.setBackgroundResource(R.drawable.repeat_black);
 
 
 
@@ -289,6 +311,28 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
                     playbackManager.seekTo(progress);
                     updateTimeLabels();
                 }
+            }
+        });
+
+        shuffleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    shuffleButton.setBackgroundResource(R.drawable.shuff_orange);
+                } else {
+                    shuffleButton.setBackgroundResource(R.drawable.ic_shuff);
+                }
+                playbackManager.setShuffle(isChecked);
+            }
+        });
+
+        repeatButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    repeatButton.setBackgroundResource(R.drawable.repeat_orange);
+                } else {
+                    repeatButton.setBackgroundResource(R.drawable.repeat_black);
+                }
+                playbackManager.setRepeat(isChecked);
             }
         });
     }
