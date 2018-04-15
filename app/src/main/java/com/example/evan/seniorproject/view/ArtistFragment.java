@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.example.evan.seniorproject.Context;
 import com.example.evan.seniorproject.MainActivity;
 import com.example.evan.seniorproject.R;
-import com.example.evan.seniorproject.db.Artist;
 import com.example.evan.seniorproject.db.Song;
 import com.example.evan.seniorproject.fragmentManagement.FragmentPagerInterface;
 
@@ -30,7 +29,7 @@ import java.util.List;
  * Created by Evan on 4/14/2018.
  */
 
-public class ArtistFragment extends Fragment implements FragmentPagerInterface, ArtistScrollContainer,SongScrollContainer{
+public class ArtistFragment extends Fragment implements FragmentPagerInterface, PopupScrollContainer,SongScrollContainer{
 
     RecyclerView artistRecyclerView;
     RecyclerView.Adapter artistAdapter;

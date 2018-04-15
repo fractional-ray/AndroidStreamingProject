@@ -18,9 +18,9 @@ import java.util.ArrayList;
 public class ArtistAdapter extends RecyclerView.Adapter {
 
     private ArrayList<String> albums;
-    ArtistScrollContainer container;
+    PopupScrollContainer container;
 
-    public ArtistAdapter(ArrayList<String> a,ArtistScrollContainer container)
+    public ArtistAdapter(ArrayList<String> a,PopupScrollContainer container)
     {
         albums = a;
         this.container = container;

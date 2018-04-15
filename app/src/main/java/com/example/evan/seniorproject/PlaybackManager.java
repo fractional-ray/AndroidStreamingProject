@@ -107,8 +107,13 @@ public class PlaybackManager {
     public void playAndSwitchContext(Context context)
     {
         mp.stop();
-        updateContext(context);
-        play();
+        if(updateContext(context))
+            play();
+        else{
+            Toast t = Toast.makeText(this.context,"Error, cannot play selection",Toast.LENGTH_LONG);
+            t.show();
+        }
+
     }
 
     public void checkResumeAndPlay()
