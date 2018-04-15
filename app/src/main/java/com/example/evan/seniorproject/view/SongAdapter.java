@@ -18,13 +18,19 @@ import java.util.ArrayList;
  */
 
 public class SongAdapter extends RecyclerView.Adapter {
+    final static int ALL = 0;
+    final static int ALBUM = 1;
+    final static int ARTIST = -2000;
+
+    int type;
     private ArrayList<Song> files;
     SongScrollContainer songScrollContainer;
 
-    public SongAdapter(ArrayList<Song> a, SongScrollContainer songScrollContainer)
+    public SongAdapter(ArrayList<Song> a, SongScrollContainer songScrollContainer, int type)
     {
         files = a;
         this.songScrollContainer = songScrollContainer;
+        this.type=type;
     }
 
     @Override
@@ -50,8 +56,16 @@ public class SongAdapter extends RecyclerView.Adapter {
             vh.txtHeader.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("outp", name.getSongName());
-                    songScrollContainer.playAndUpdateContext(null,position);
+                        Log.i("outp", name.getSongName());
+                        if(type == SongAdapter.ALL)
+                            songScrollContainer.playAndUpdateContext(null,position);
+                        else if(type == SongAdapter.ALBUM)
+                            songScrollContainer.playAndUpdateContext(name.getAlbum(),position);
+                        else if(type == SongAdapter.ARTIST) {
+                            Log.i("outp","album select");
+                            songScrollContainer.playAndUpdateContext(name.getArtist(), position);
+                    }
+
 
                 }
             });
@@ -81,4 +95,6 @@ public class SongAdapter extends RecyclerView.Adapter {
             txtFooter = (TextView) itemView.findViewById(R.id.secondLine);
         }
     }
+
+
 }

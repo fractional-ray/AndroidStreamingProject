@@ -18,11 +18,12 @@ import java.util.ArrayList;
 public class ArtistAdapter extends RecyclerView.Adapter {
 
     private ArrayList<String> albums;
-    SongScrollContainer songScrollContainer;
+    ArtistScrollContainer container;
 
-    public ArtistAdapter(ArrayList<String> a)
+    public ArtistAdapter(ArrayList<String> a,ArtistScrollContainer container)
     {
         albums = a;
+        this.container = container;
 //        this.songScrollContainer = songScrollContainer;
     }
 
@@ -46,6 +47,7 @@ public class ArtistAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     Log.i("outp", name);
+                    container.showPopUp(v,name);
 //                    songScrollContainer.playAndUpdateContext(null,position);
                 }
             });

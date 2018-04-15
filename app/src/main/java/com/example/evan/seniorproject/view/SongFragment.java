@@ -65,7 +65,7 @@ public class SongFragment extends android.support.v4.app.Fragment implements Son
     public void updateSongScroll(ArrayList<Song> s){
 
         songRecyclerView.setLayoutManager(layoutManager);
-        songAdapter = new SongAdapter(s,this);
+        songAdapter = new SongAdapter(s,this,SongAdapter.ALL);
         songRecyclerView.setAdapter(songAdapter);
 
     }
@@ -78,7 +78,7 @@ public class SongFragment extends android.support.v4.app.Fragment implements Son
     @Override
     public void onResumeFragment() {
         songRecyclerView.setLayoutManager(layoutManager);
-        songAdapter = new SongAdapter((ArrayList)main.getSongDB().songDAO().getAll(),this);
+        songAdapter = new SongAdapter((ArrayList)main.getSongDB().songDAO().getAll(),this,SongAdapter.ALL);
         songRecyclerView.setAdapter(songAdapter);
     }
 

@@ -8,12 +8,14 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.example.evan.seniorproject.db.Song;
 import com.example.evan.seniorproject.db.SongDatabase;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Evan on 2/18/2018.
@@ -171,14 +173,57 @@ public class PlaybackManager {
         context.updateNowPlayingSeekbar();
     }
 
-    private void updateContext(Context c)
+    private boolean updateContext(Context c)
     {
         if(c.getContextType()==Context.Contexts.ALL_SONGS_IN_LIBRARY_SPECIFIC)
         {
             queue.setContext(files);
             queue.setPosition(c.getPosition());
             Log.i("context","specific "+queue.current());
+            return true;
         }
+        else if(c.getContextType()==Context.Contexts.ARTIST)
+        {
+
+
+            List<Song> l = context.getSongDB().songDAO().getArtistSongs(c.id);
+
+            if(l.size()!=0)
+            {
+                Log.i("outp","another test "+c.id+" "+l.size());
+
+                queue.setContext(l);
+
+                queue.setPosition(c.getPosition());
+                return true;
+            }
+
+            Toast t = Toast.makeText(context,"No songs in artist "+c.id,Toast.LENGTH_SHORT);
+            t.show();
+
+        }
+        else if(c.getContextType()==Context.Contexts.ALBUM)
+        {
+
+
+            List<Song> l = context.getSongDB().songDAO().getAlbum(c.id);
+
+            if(l.size()!=0)
+            {
+                Log.i("outp","another test "+c.id+" "+l.size());
+
+                queue.setContext(l);
+
+                queue.setPosition(c.getPosition());
+                return true;
+            }
+
+            Toast t = Toast.makeText(context,"No songs in album "+c.id,Toast.LENGTH_SHORT);
+            t.show();
+
+        }
+
+        return false;
     }
 
     public int getDuration()
