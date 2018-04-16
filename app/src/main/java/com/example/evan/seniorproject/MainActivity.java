@@ -1,6 +1,7 @@
 package com.example.evan.seniorproject;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -173,7 +175,8 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     {
 
         ProgressBar p = findViewById(R.id.songLoadWheel);
-        p.setVisibility(View.GONE);
+        p.setVisibility(View.INVISIBLE);
+        musicPager.setEnabled(true);
 
         Fragment f = musicFragmentAdapter.getItem(musicPager.getCurrentItem());
 
@@ -209,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////        REMOTE METHODS    ///////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   //VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
     public void connect(String ip)
     {
@@ -220,11 +223,15 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
     public void playRemote(String id, String ip)
     {
-        Log.i("connect","to play "+id);
-        updateNowPlayingLabel(id);
-        lockAssetsForRemoteMode();
-        connectionManager.play(id, ip);
-        playbackManager.setRemoteMode(true);
+        Log.i("connect","is connection playing "+connectionManager.isPlaying());
+        if(!connectionManager.isPlaying()) {
+            playbackManager.stop();
+            Log.i("connect", "to play " + id);
+            updateNowPlayingLabel(id);
+            lockAssetsForRemoteMode();
+            connectionManager.play(id, ip);
+            playbackManager.setRemoteMode(true);
+        }
     }
 
     public ConnectionManager getConnectionManager() {
@@ -259,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         seekBar.setEnabled(false);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     ////////////////////////////////////////////////////        REMOTE METHODS    ///////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -270,11 +277,39 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
 
     public void refreshLibrary(View v){
-        songDB.songDAO().nukeDatabase();
 
+        final MainActivity main = this;
 
-        FileManager f = new FileManager(this,songDB);
-        f.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,PlaybackManager.getPath());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+
+                musicPager.setEnabled(false);
+
+                songDB.songDAO().nukeDatabase();
+                FileManager f = new FileManager(main,songDB);
+                f.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,PlaybackManager.getPath());
+
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                // Stuff to do
+            }
+        });
+
+        builder.setMessage("Do you want to refresh library? (This will take a while)");
+        builder.setTitle("Refresh?");
+
+        AlertDialog d = builder.create();
+        d.show();
+
 
     }
 

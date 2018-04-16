@@ -26,6 +26,8 @@ public class ConnectionManager {
 
     ShutDown shutDown = new ShutDown();
 
+    private boolean isPlaying = false;
+
     public static volatile ArrayList<Byte> data = new ArrayList<Byte>();
     ConnectionManagerAsyncTask task;
 
@@ -64,44 +66,42 @@ public class ConnectionManager {
     public void play(String file, String ip2)
     {
 
-        shutDown.shutDown = false;
-        Object lock = new Object();
+//        if(!isPlaying) {
+            shutDown.shutDown = false;
+            Object lock = new Object();
 
-        try {
-            baos= new PipedOutputStream();
-            bais = new PipedInputStream(baos,AudioTrackThread.AT_BUFFER_SIZE);
+            try {
+                baos = new PipedOutputStream();
+                bais = new PipedInputStream(baos, AudioTrackThread.AT_BUFFER_SIZE);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        StreamThread st = new StreamThread(ip2,PORT_NUMBER,this,baos,lock,file,shutDown);
-        AudioTrackThread att = new AudioTrackThread(ip2,PORT_NUMBER,this,bais,lock,shutDown);
+            StreamThread st = new StreamThread(ip2, PORT_NUMBER, this, baos, lock, file, shutDown);
+            AudioTrackThread att = new AudioTrackThread(ip2, PORT_NUMBER, this, bais, lock, shutDown);
 
-        Thread t1 = new Thread(st);
-        Thread t2 = new Thread(att);
+            Thread t1 = new Thread(st);
+            Thread t2 = new Thread(att);
 
-        executor.execute(t1);
-        executor.execute(t2);
+            isPlaying=true;
 
-//        t1.start();
-//        t2.start();
-
-//        executor.shutDownNow();
+            executor.execute(t1);
+            executor.execute(t2);
+//        }
 
         Log.i("connect","test");
 
-//        try {
-//            t1.join();
-//            t2.join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        Log.i("connect","threads joined");
+    }
 
+    public void finishPlaying()
+    {
+        isPlaying=false;
+    }
 
-
-
+    public boolean isPlaying()
+    {
+        return isPlaying;
     }
 
     public void loadServerSongStringIntoList(String serverString)
@@ -142,6 +142,7 @@ public class ConnectionManager {
     public void stopPlaying()
     {
         shutDown.shutDown = true;
+
     }
 
     public void resetAfterPlaying()

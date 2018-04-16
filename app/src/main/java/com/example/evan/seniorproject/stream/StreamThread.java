@@ -113,5 +113,6 @@ public class StreamThread implements Runnable{
             e.printStackTrace();
             Log.e("error stream", e.getMessage()+ " "+e.getClass());
         }
+        parent.finishPlaying();
     }
 }

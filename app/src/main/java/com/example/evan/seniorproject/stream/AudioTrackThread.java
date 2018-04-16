@@ -87,6 +87,7 @@ public class AudioTrackThread implements Runnable {
             Log.e("Reader error",e.getMessage());
             e.printStackTrace();
         }
+        parent.finishPlaying();
     }
 
 }

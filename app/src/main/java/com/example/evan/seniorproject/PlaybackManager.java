@@ -95,6 +95,9 @@ public class PlaybackManager {
     {
         if(!internetMode) {
             if (!mp.isPlaying()) {
+
+                context.unlockAssetsFromRemoteMode();
+
                 play(0);
                 updateNowPlaying();
                 return true;
@@ -116,16 +119,28 @@ public class PlaybackManager {
      * Update context and play song
      * @param context the context to be updated to.
      */
-    public void playAndSwitchContext(Context context)
-    {
+    public void playAndSwitchContext(Context context) {
+
+
         mp.stop();
-        if(updateContext(context))
+        if (updateContext(context))
+        {
+            internetMode = false;
+            this.context.stopRemoteMode();
             play();
+        }
+
         else{
             Toast t = Toast.makeText(this.context,"Error, cannot play selection",Toast.LENGTH_LONG);
             t.show();
         }
 
+    }
+
+    public void stop()
+    {
+        if(mp.isPlaying())
+            mp.stop();
     }
 
     public void checkResumeAndPlay()
