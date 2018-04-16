@@ -117,22 +117,6 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
         musicPager.addOnPageChangeListener(pageChangeListener);
 
-//        fragmentContainer = findViewById(R.id.fragmentHolderLayout);
-//
-//        if(fragmentContainer != null)
-//        {
-//            if(savedInstanceState != null)
-//            {
-//                return;
-//            }
-//
-//            SongFragment songFragment = new SongFragment();
-//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//            ft.add(R.id.fragmentHolderLayout, songFragment);
-//            ft.commit();
-//
-//        }
-
         requestPermissionsRuntime();
 
         remainingT = findViewById(R.id.timeRemainingLabel);
@@ -147,10 +131,6 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
 
         seekBar = findViewById(R.id.nowPlayingSeekBar);
-
-//        songScroll.addView(pb);
-
-
 
         playbackManager = new PlaybackManager(this);
         connectionManager = new ConnectionManager(this);
@@ -227,6 +207,10 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         playbackManager.skipForward();
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////        REMOTE METHODS    ///////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public void connect(String ip)
     {
         Log.i("connect","clicked");
@@ -237,9 +221,47 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     public void playRemote(String id, String ip)
     {
         Log.i("connect","to play "+id);
+        updateNowPlayingLabel(id);
+        lockAssetsForRemoteMode();
         connectionManager.play(id, ip);
         playbackManager.setRemoteMode(true);
     }
+
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
+
+    public void stopRemoteMode()
+    {
+        unlockAssetsFromRemoteMode();
+        connectionManager.stopPlaying();
+    }
+
+    public void updateRemoteViewList(){
+        Fragment f = musicFragmentAdapter.getItem(musicPager.getCurrentItem());
+        if(f instanceof RemoteFragment)
+        {
+            ((RemoteFragment) f).onResumeFragment();
+        }
+    }
+
+    public void unlockAssetsFromRemoteMode()
+    {
+        shuffleButton.setEnabled(true);
+        repeatButton.setEnabled(true);
+        seekBar.setEnabled(true);
+    }
+
+    public void lockAssetsForRemoteMode()
+    {
+        shuffleButton.setEnabled(false);
+        repeatButton.setEnabled(false);
+        seekBar.setEnabled(false);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////        REMOTE METHODS    ///////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void buttonA(View v)
     {
@@ -256,13 +278,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
     }
 
-    public void updateRemoteViewList(){
-        Fragment f = musicFragmentAdapter.getItem(musicPager.getCurrentItem());
-        if(f instanceof RemoteFragment)
-        {
-            ((RemoteFragment) f).onResumeFragment();
-        }
-    }
+
 
     public void updateNowPlayingLabel(String update)
     {
@@ -301,14 +317,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         return songDB;
     }
 
-    public ConnectionManager getConnectionManager() {
-        return connectionManager;
-    }
 
-    public void stopRemoteMode()
-    {
-        connectionManager.stopPlaying();
-    }
 
     @Override
     public void onTaskComplete(ArrayList<Song> a) {

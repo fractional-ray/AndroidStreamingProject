@@ -106,6 +106,7 @@ public class PlaybackManager {
         else
         {
             context.stopRemoteMode();
+            context.updateNowPlayingLabel("Now playing:");
             internetMode = false;
             return false;
         }
@@ -160,6 +161,9 @@ public class PlaybackManager {
     }
 
     public void skipForward(){
+        if(internetMode)
+            return;
+
         queue.moveForward();
 
         if((queue.currentPosition()==0 && isRepeat)||queue.currentPosition()!=0)
@@ -168,6 +172,9 @@ public class PlaybackManager {
     }
 
     public void skipBackward(){
+        if(internetMode)
+            return;
+
         if(mp.getCurrentPosition() < 2000) {
             queue.moveBackwards();
             mp.stop();
