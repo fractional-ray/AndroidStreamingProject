@@ -33,6 +33,7 @@ import com.example.evan.seniorproject.db.Song;
 import com.example.evan.seniorproject.db.SongDatabase;
 import com.example.evan.seniorproject.fragmentManagement.FragmentPagerInterface;
 import com.example.evan.seniorproject.fragmentManagement.MusicFragmentAdapter;
+import com.example.evan.seniorproject.view.RemoteFragment;
 import com.example.evan.seniorproject.view.SongAdapter;
 import com.example.evan.seniorproject.view.SongFragment;
 
@@ -233,10 +234,17 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         connectionManager.connect(ip);
     }
 
+    public void playRemote(String id, String ip)
+    {
+        Log.i("connect","to play "+id);
+        connectionManager.play(id, ip);
+    }
+
     public void buttonA(View v)
     {
 //        connectionManager.play();
     }
+
 
     public void refreshLibrary(View v){
         songDB.songDAO().nukeDatabase();
@@ -245,6 +253,14 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
         FileManager f = new FileManager(this,songDB);
         f.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,PlaybackManager.getPath());
 
+    }
+
+    public void updateRemoteViewList(){
+        Fragment f = musicFragmentAdapter.getItem(musicPager.getCurrentItem());
+        if(f instanceof RemoteFragment)
+        {
+            ((RemoteFragment) f).onResumeFragment();
+        }
     }
 
     public void updateNowPlayingLabel(String update)

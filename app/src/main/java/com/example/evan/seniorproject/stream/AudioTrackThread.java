@@ -30,7 +30,7 @@ public class AudioTrackThread implements Runnable {
     private int port;
     ConnectionManager parent;
     PipedInputStream bais;
-    Object lock;
+   Object lock;
 
     //This amounts to 4 seconds of audio.
     public final static int AT_BUFFER_SIZE = 44100*16*2*4;

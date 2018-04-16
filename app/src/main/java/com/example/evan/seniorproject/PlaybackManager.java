@@ -233,7 +233,7 @@ public class PlaybackManager {
         }
         else if(c.getContextType()==Context.Contexts.REMOTE)
         {
-            context.getConnectionManager().play(c.id);
+//            context.getConnectionManager().play(c.id);
             internetMode=true;
             return false;
         }

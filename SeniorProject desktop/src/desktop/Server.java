@@ -30,6 +30,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class Server
 {
 
+	final int PORT_NUM = 5555;
 	Path path = Paths.get("C:\\Users\\Evan\\Documents\\School\\Westminster\\Senior Project\\m\\tests2\\unconverted\\sky.mp3");
 
 	final static int BUFFER_SIZE = 4096;
@@ -51,8 +52,8 @@ public class Server
 		try
 		{
 
-			int portNum = 5000;
-			ss = new ServerSocket(portNum);
+			
+			ss = new ServerSocket(PORT_NUM);
 
 			while (true)
 			{
@@ -96,7 +97,8 @@ public class Server
 		@Override
 		public void run()
 		{
-			BufferedReader in;
+			BufferedReader in=null;
+			DataOutputStream out=null;
 			try
 			{
 				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -104,14 +106,14 @@ public class Server
 				String line = in.readLine();
 				System.out.println(line);
 
-				DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+				out = new DataOutputStream(clientSocket.getOutputStream());
 
 				if (line.charAt(0) == ClientCodes.PLAY)
 				{
 					String parsed = parseSongPlayRequest(line);
 					if (parsed != null)
 					{
-						System.out.println(parsed);
+						System.out.println("Parsed: "+parsed);
 						System.out.println("Finished streaming " + streamFile(out, clientSocket, parsed) + " segments");
 					}
 					else
@@ -139,13 +141,19 @@ public class Server
 					out.write("other\r\n".getBytes());
 				}
 
-				clientSocket.close();
+				clientSocket.close();	
+				in.close();
+				out.close();
+				System.out.println("Connection closed");
 
 			}
 			catch (Exception e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			finally {
+				
 			}
 
 		}
@@ -181,7 +189,6 @@ public class Server
 
 		byte[] by = new byte[BUFFER_SIZE];
 		int rc = 0;
-
 		while (true)
 		{
 			rc = convert2AIS.read(by, 0, BUFFER_SIZE);
@@ -192,6 +199,10 @@ public class Server
 			out.write(by, 0, rc);
 			c++;
 		}
+		bais.close();
+		sourceAIS.close();
+		convert1AIS.close();
+		convert2AIS.close();
 
 		return c;
 	}

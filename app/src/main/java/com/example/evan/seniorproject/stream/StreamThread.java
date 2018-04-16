@@ -34,7 +34,7 @@ public class StreamThread implements Runnable{
 
     PipedOutputStream baos;
     PipedInputStream bais;
-    Object lock;
+   Object lock;
     String file;
 
     public StreamThread(String ip, int port, ConnectionManager parent, PipedOutputStream baos, Object lock,String file)
@@ -65,10 +65,11 @@ public class StreamThread implements Runnable{
             BufferedInputStream inS = new BufferedInputStream(socket.getInputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String servResponse = reader.readLine();
-            reader.close();
+
 
             if(servResponse.charAt(0)=='0') {
 
+                Log.i("connect","server response good");
                 byte[] by = new byte[ConnectionManager.BUFFER_SIZE];
                 int read;
 
@@ -76,7 +77,10 @@ public class StreamThread implements Runnable{
                 boolean notified = false;
 
                 do {
+//                    Log.i("connect","preparing to read");
                     read = inS.read(by, 0, ConnectionManager.BUFFER_SIZE);
+//                    Log.i("connect",""+read);
+
                     accumulated += read;
                     baos.write(by, 0, read);
                     baos.flush();
@@ -90,6 +94,10 @@ public class StreamThread implements Runnable{
 
                 } while (read > 0);
 
+                reader.close();
+                out.close();
+                socket.close();
+                inS.close();
             }
             else
             {
@@ -98,6 +106,7 @@ public class StreamThread implements Runnable{
             socket.close();
 
         } catch (Exception e) {
+            e.printStackTrace();
             Log.e("error stream", e.getMessage()+ " "+e.getClass());
         }
     }

@@ -95,6 +95,8 @@ public class ConnectionManagerAsyncTask {
 
             socket.close();
 
+            Log.i("connect","socket closed");
+
             return serverMessage;
         }
 

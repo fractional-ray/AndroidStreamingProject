@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class ConnectionManager {
 
-    final static int PORT_NUMBER = 5000;
+    final static int PORT_NUMBER = 5555;
     String ip;
 
     public static volatile ArrayList<Byte> data = new ArrayList<Byte>();
@@ -52,9 +52,10 @@ public class ConnectionManager {
     public void updateSongList(String s)
     {
         loadServerSongStringIntoList(s);
+        context.updateRemoteViewList();
     }
 
-    public void play(String file)
+    public void play(String file, String ip2)
     {
         Object lock = new Object();
 
@@ -66,9 +67,8 @@ public class ConnectionManager {
             e.printStackTrace();
         }
 
-//        String file = remoteFiles.get(3);
-        StreamThread st = new StreamThread(ip,PORT_NUMBER,this,baos,lock,file);
-        AudioTrackThread att = new AudioTrackThread(ip,PORT_NUMBER,this,bais,lock);
+        StreamThread st = new StreamThread(ip2,PORT_NUMBER,this,baos,lock,file);
+        AudioTrackThread att = new AudioTrackThread(ip2,PORT_NUMBER,this,bais,lock);
 
         Thread t1 = new Thread(st);
         Thread t2 = new Thread(att);
@@ -78,6 +78,16 @@ public class ConnectionManager {
         t2.start();
 
         Log.i("connect","test");
+
+//        try {
+//            t1.join();
+//            t2.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        Log.i("connect","threads joined");
+
+
 
 
     }

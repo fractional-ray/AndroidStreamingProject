@@ -107,7 +107,7 @@ public class RemoteFragment extends Fragment implements FragmentPagerInterface, 
 
     @Override
     public void playAndUpdateContext(String id, int toPlay) {
-        main.getPlaybackManager().playAndSwitchContext(new Context(Context.Contexts.REMOTE,id,toPlay));
+        main.playRemote(id,ipText.getText().toString());
     }
 
     public void connectRemote(View v)
