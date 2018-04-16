@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -21,6 +23,8 @@ public class ConnectionManager {
 
     final static int PORT_NUMBER = 5555;
     String ip;
+
+    ShutDown shutDown = new ShutDown();
 
     public static volatile ArrayList<Byte> data = new ArrayList<Byte>();
     ConnectionManagerAsyncTask task;
@@ -33,6 +37,8 @@ public class ConnectionManager {
     private ArrayList<String> remoteFiles;
 
     MainActivity context;
+
+    private static final Executor executor = Executors.newFixedThreadPool(2);
 
 
     public ConnectionManager(MainActivity context){
@@ -57,6 +63,8 @@ public class ConnectionManager {
 
     public void play(String file, String ip2)
     {
+
+        shutDown.shutDown = false;
         Object lock = new Object();
 
         try {
@@ -67,15 +75,19 @@ public class ConnectionManager {
             e.printStackTrace();
         }
 
-        StreamThread st = new StreamThread(ip2,PORT_NUMBER,this,baos,lock,file);
-        AudioTrackThread att = new AudioTrackThread(ip2,PORT_NUMBER,this,bais,lock);
+        StreamThread st = new StreamThread(ip2,PORT_NUMBER,this,baos,lock,file,shutDown);
+        AudioTrackThread att = new AudioTrackThread(ip2,PORT_NUMBER,this,bais,lock,shutDown);
 
         Thread t1 = new Thread(st);
         Thread t2 = new Thread(att);
 
+        executor.execute(t1);
+        executor.execute(t2);
 
-        t1.start();
-        t2.start();
+//        t1.start();
+//        t2.start();
+
+//        executor.shutDownNow();
 
         Log.i("connect","test");
 
@@ -125,6 +137,23 @@ public class ConnectionManager {
     public ArrayList<String> getRemoteFiles()
     {
         return remoteFiles;
+    }
+
+    public void stopPlaying()
+    {
+        shutDown.shutDown = true;
+    }
+
+    public void resetAfterPlaying()
+    {
+
+    }
+
+
+    public class ShutDown
+    {
+        public volatile boolean shutDown = false;
+
     }
 
     final class ClientCodes {

@@ -31,17 +31,19 @@ public class AudioTrackThread implements Runnable {
     ConnectionManager parent;
     PipedInputStream bais;
    Object lock;
+   ConnectionManager.ShutDown shutDown;
 
     //This amounts to 4 seconds of audio.
     public final static int AT_BUFFER_SIZE = 44100*16*2*4;
 
 
-    public AudioTrackThread(String ip, int port, ConnectionManager parent, PipedInputStream bais, Object lock) {
+    public AudioTrackThread(String ip, int port, ConnectionManager parent, PipedInputStream bais, Object lock, ConnectionManager.ShutDown shutDown) {
         this.ip = ip;
         this.port = port;
         this.parent = parent;
         this.bais = bais;
         this.lock = lock;
+        this.shutDown = shutDown;
     }
 
     @Override
@@ -70,6 +72,9 @@ public class AudioTrackThread implements Runnable {
             audioTrack.play();
 
             do {
+
+                if(shutDown.shutDown)
+                    break;
 
                 read = bais.read(by, 0, ConnectionManager.BUFFER_SIZE);
                 audioTrack.write(by, 0, read);

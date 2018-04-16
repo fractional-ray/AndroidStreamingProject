@@ -36,8 +36,9 @@ public class StreamThread implements Runnable{
     PipedInputStream bais;
    Object lock;
     String file;
+    ConnectionManager.ShutDown shutDown;
 
-    public StreamThread(String ip, int port, ConnectionManager parent, PipedOutputStream baos, Object lock,String file)
+    public StreamThread(String ip, int port, ConnectionManager parent, PipedOutputStream baos, Object lock, String file, ConnectionManager.ShutDown shutDown)
     {
         this.ip = ip;
         this.port = port;
@@ -45,6 +46,7 @@ public class StreamThread implements Runnable{
         this.baos = baos;
         this.lock = lock;
         this.file = file;
+        this.shutDown = shutDown;
     }
 
     @Override
@@ -77,6 +79,8 @@ public class StreamThread implements Runnable{
                 boolean notified = false;
 
                 do {
+                    if(shutDown.shutDown)
+                        break;
 //                    Log.i("connect","preparing to read");
                     read = inS.read(by, 0, ConnectionManager.BUFFER_SIZE);
 //                    Log.i("connect",""+read);

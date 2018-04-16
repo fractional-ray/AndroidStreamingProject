@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
     {
         Log.i("connect","to play "+id);
         connectionManager.play(id, ip);
+        playbackManager.setRemoteMode(true);
     }
 
     public void buttonA(View v)
@@ -302,6 +303,11 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
     public ConnectionManager getConnectionManager() {
         return connectionManager;
+    }
+
+    public void stopRemoteMode()
+    {
+        connectionManager.stopPlaying();
     }
 
     @Override

@@ -93,13 +93,20 @@ public class PlaybackManager {
      */
     public boolean play()
     {
-        if(!mp.isPlaying()){
-            play(0);
-            updateNowPlaying();
-            return true;
+        if(!internetMode) {
+            if (!mp.isPlaying()) {
+                play(0);
+                updateNowPlaying();
+                return true;
+            } else {
+                mp.stop();
+                return false;
+            }
         }
-        else{
-            mp.stop();
+        else
+        {
+            context.stopRemoteMode();
+            internetMode = false;
             return false;
         }
     }
@@ -123,6 +130,12 @@ public class PlaybackManager {
     public void checkResumeAndPlay()
     {
 
+    }
+
+
+    public void setRemoteMode(boolean remoteState)
+    {
+        this.internetMode = remoteState;
     }
 
     /**
