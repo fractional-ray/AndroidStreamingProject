@@ -33,6 +33,7 @@ public class RemoteFragment extends Fragment implements FragmentPagerInterface, 
     RecyclerView.LayoutManager layoutManager;
     MainActivity main;
     Button connectButton;
+    TextView noSongsLabel;
 
 
 
@@ -42,7 +43,7 @@ public class RemoteFragment extends Fragment implements FragmentPagerInterface, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View v = inflater.inflate(R.layout.remote_list_fragment_layout,container,false);
-
+        noSongsLabel = v.findViewById(R.id.noSongsLoadedLabel);
         ipText = v.findViewById(R.id.ipText2);
         ipText.setText(MainActivity.STARTING_IP);
         connectButton = v.findViewById(R.id.connectButtonRemote);
@@ -86,6 +87,8 @@ public class RemoteFragment extends Fragment implements FragmentPagerInterface, 
         Log.i("fragment","resume remote");
 
         if(main.getConnectionManager().hasSongsLoaded()) {
+
+            noSongsLabel.setVisibility(View.GONE);
 
             ArrayList<String> l = main.getConnectionManager().getRemoteFiles();
 

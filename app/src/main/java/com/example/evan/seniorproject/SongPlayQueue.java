@@ -1,6 +1,8 @@
 package com.example.evan.seniorproject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,6 +13,8 @@ public class SongPlayQueue<T> implements ContextQueue<T> {
 
     ArrayList<T> context;
     int currPos=0;
+
+    Context contextWrap = new Context(Context.Contexts.ALL_SONGS_IN_LIBRARY_SPECIFIC,null,0);
     Context.Contexts currentContext = Context.Contexts.ALL_SONGS_IN_LIBRARY_SPECIFIC;
 
     public SongPlayQueue(ArrayList<T> context)
@@ -76,5 +80,22 @@ public class SongPlayQueue<T> implements ContextQueue<T> {
     public void resetPosition()
     {
         currPos = 0;
+    }
+
+    public void shuffle()
+    {
+        T c = context.remove(currPos);
+        Collections.shuffle(context);
+        context.add(0,c);
+    }
+
+    public Context getContextWrap()
+    {
+        return contextWrap;
+    }
+
+    public void setContextWrap(Context c2)
+    {
+        contextWrap=c2;
     }
 }

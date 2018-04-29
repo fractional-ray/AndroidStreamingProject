@@ -223,6 +223,7 @@ public class PlaybackManager {
         {
             queue.setContext(files);
             queue.setPosition(c.getPosition());
+            queue.setContextWrap(c);
             Log.i("context","specific "+queue.current());
             return true;
         }
@@ -239,6 +240,7 @@ public class PlaybackManager {
                 queue.setContext(l);
 
                 queue.setPosition(c.getPosition());
+               queue.setContextWrap(c);
                 return true;
             }
 
@@ -259,6 +261,7 @@ public class PlaybackManager {
                 queue.setContext(l);
 
                 queue.setPosition(c.getPosition());
+                queue.setContextWrap(c);
                 return true;
             }
 
@@ -269,8 +272,23 @@ public class PlaybackManager {
         else if(c.getContextType()==Context.Contexts.REMOTE)
         {
 //            context.getConnectionManager().play(c.id);
+            queue.setContextWrap(c);
             internetMode=true;
             return false;
+        }
+        else if(c.getContextType()==Context.Contexts.GENRE)
+        {
+            List<Song>l = context.getSongDB().songDAO().getGenreSongs(c.id);
+            if(l.size()!=0)
+            {
+                Log.i("outp","another test "+c.id+" "+l.size());
+
+                queue.setContext(l);
+
+                queue.setPosition(c.getPosition());
+                queue.setContextWrap(c);
+                return true;
+            }
         }
 
         return false;
@@ -320,7 +338,10 @@ public class PlaybackManager {
 
     public void setShuffle(boolean shuffle)
     {
-
+        if(shuffle)
+            queue.shuffle();
+        else
+            playAndSwitchContext(queue.getContextWrap());
     }
 
     public ArrayList<Song> getAllSongs()
