@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
 
         songDB = SongDatabase.getInstance(this);
 
-        FileManager f = new FileManager(this,songDB);
+        FileManager f = new FileManager(this,songDB,this);
 //        f.doInBackground(PlaybackManager.getPath());
 
 
@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskComplete {
                 musicPager.setEnabled(false);
 
                 songDB.songDAO().nukeDatabase();
-                FileManager f = new FileManager(main,songDB);
+                FileManager f = new FileManager(main,songDB,main);
                 f.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,PlaybackManager.getPath());
 
             }

@@ -26,6 +26,9 @@ public interface SongDAO {
     @Query("SELECT DISTINCT album FROM songs ORDER BY album ASC")
     List<String> getUniqueAlbums();
 
+    @Query("SELECT DISTINCT genre FROM songs ORDER BY genre ASC")
+    List<String> getUniqueGenres();
+
     @Query("SELECT * FROM songs WHERE album LIKE :album")
     List<Song> getAlbum(String album);
 
@@ -34,6 +37,11 @@ public interface SongDAO {
 
     @Query("SELECT COUNT(*) from songs")
     int songCount();
+
+    @Query("SELECT * FROM songs WHERE genre LIKE :genre")
+    List<Song> getGenreSongs(String genre);
+
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Song... songs);

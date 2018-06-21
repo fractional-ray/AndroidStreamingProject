@@ -9,7 +9,7 @@ import android.provider.SyncStateContract;
 /**
  * Created by Evan on 3/29/2018.
  */
-@Database(entities = {Song.class},version = 2)
+@Database(entities = {Song.class},version = 3)
 public abstract class SongDatabase extends RoomDatabase{
 //{
 

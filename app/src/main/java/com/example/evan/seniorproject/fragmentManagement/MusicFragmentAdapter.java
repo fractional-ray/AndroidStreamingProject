@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.evan.seniorproject.view.AlbumFragment;
 import com.example.evan.seniorproject.view.ArtistFragment;
+import com.example.evan.seniorproject.view.GenreFragment;
 import com.example.evan.seniorproject.view.RemoteFragment;
 import com.example.evan.seniorproject.view.SongFragment;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 
 public class MusicFragmentAdapter extends FragmentPagerAdapter {
 
-    private final int SCREEN_NUMBER = 4;
+    private final int SCREEN_NUMBER = 5;
     ArrayList<Fragment> fragmentList;
 
     public MusicFragmentAdapter(FragmentManager fm) {
@@ -26,6 +27,7 @@ public class MusicFragmentAdapter extends FragmentPagerAdapter {
         fragmentList.add(new SongFragment());
         fragmentList.add(new AlbumFragment());
         fragmentList.add(new ArtistFragment());
+        fragmentList.add(new GenreFragment());
         fragmentList.add(new RemoteFragment());
     }
 

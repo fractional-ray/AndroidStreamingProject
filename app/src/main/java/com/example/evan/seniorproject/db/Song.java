@@ -17,15 +17,16 @@ public class Song {
      * @param artist
      * @param album
      */
-    public Song(String fileName,String songName, String artist, String album)
+    public Song(String fileName,String songName, String artist, String album,String genre, String imagePath)
     {
         this.songName = songName;
         this.fileName = fileName;
         this.artist = artist;
         this.album=album;
         this.length=0;
-        this.country="a";
-        this.genre="a";
+        this.country="<UNKNOWN>";
+        this.genre=genre;
+        this.imagePath = imagePath;
     }
 
     @PrimaryKey(autoGenerate = true)
@@ -55,6 +56,9 @@ public class Song {
 
     @ColumnInfo(name = "country")
     private String country;
+
+    @ColumnInfo(name = "imagePath")
+    private String imagePath;
 
     public int getKey() {
         return key;
@@ -127,6 +131,10 @@ public class Song {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
+    public String getImagePath(){return imagePath;}
+
+    public void setImagePath(String imagePath){this.imagePath = imagePath;}
 
     @Override
     public String toString()
