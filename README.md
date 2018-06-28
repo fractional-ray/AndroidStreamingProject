@@ -5,3 +5,4 @@ Additionally, the Android side acts as a fully functional music player which can
 
 (should add how it works and how others can contribute)
 
+;)
